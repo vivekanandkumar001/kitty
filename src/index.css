@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-background: #f5f4f0;
+  --color-foreground: #111110;
+  --color-card: #ffffff;
+  --color-card-foreground: #111110;
+  --color-primary: #c2f542;
+  --color-primary-foreground: #111110;
+  --color-secondary: #e8e7e2;
+  --color-secondary-foreground: #111110;
+  --color-muted: #d8d7d2;
+  --color-muted-foreground: #6b6a65;
+  --color-accent: #c2f542;
+  --color-accent-foreground: #111110;
+  --color-border: #d0cfc9;
+  --color-ring: #c2f542;
+  --radius: 4px;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-serif: 'Roboto Slab', serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

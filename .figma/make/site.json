@@ -1,0 +1,10 @@
+{
+  "description": "Connect and chat instantly with friends in private virtual rooms to share ideas, collaborate, or socialize in a secure, easy-to-use space.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
