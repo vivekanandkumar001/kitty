@@ -58,9 +58,11 @@ if not db_uri:
             "PostgreSQL connection URI is required. Please set 'DATABASE_URL' or 'postgresql_uri' in backend/.env"
         )
 
-# Fix for services using postgres:// scheme
+# Fix for services using postgres:// or generic postgresql:// scheme
 if db_uri.startswith("postgres://"):
-    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
+    db_uri = db_uri.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_uri.startswith("postgresql://") and not db_uri.startswith("postgresql+"):
+    db_uri = db_uri.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
