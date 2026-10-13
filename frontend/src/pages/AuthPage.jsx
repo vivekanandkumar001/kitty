@@ -13,7 +13,7 @@ import {
   Repeat,
 } from 'lucide-react';
 
-export default function AuthPage() {
+export default function AuthPage({ onOpenAdmin }) {
   const { login, signup } = useAuth();
   const { showToast } = useToast();
 
@@ -324,6 +324,26 @@ export default function AuthPage() {
               )}
             </button>
           </form>
+
+          {onOpenAdmin && (
+            <div
+              style={{
+                marginTop: '18px',
+                textAlign: 'center',
+                paddingTop: '14px',
+                borderTop: '1px solid var(--border-subtle)',
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-subtle btn-sm"
+                style={{ fontSize: '0.8rem', color: 'var(--text-dim)', gap: '6px' }}
+                onClick={onOpenAdmin}
+              >
+                <ShieldCheck size={14} style={{ color: 'var(--indigo-ink)' }} /> Superadmin Portal
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -11,9 +11,10 @@ import {
   Building,
   CreditCard,
   ExternalLink,
+  Shield,
 } from 'lucide-react';
 
-export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onOpenProfile }) {
+export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onOpenProfile, onOpenAdmin }) {
   const { user, logout, notifications, markNotificationRead, markAllNotificationsRead } = useAuth();
   const { showToast } = useToast();
   const [showNotifs, setShowNotifs] = useState(false);
@@ -211,6 +212,26 @@ export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onO
                   >
                     <User size={15} /> Edit Profile / UPI
                   </button>
+
+                  {onOpenAdmin && (
+                    <button
+                      type="button"
+                      className="btn btn-subtle btn-sm"
+                      style={{
+                        width: '100%',
+                        justifyContent: 'flex-start',
+                        padding: '9px 12px',
+                        borderRadius: 'var(--radius-xs)',
+                        color: 'var(--indigo-ink)',
+                      }}
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        onOpenAdmin();
+                      }}
+                    >
+                      <Shield size={15} /> Superadmin Portal
+                    </button>
+                  )}
 
                   <button
                     type="button"

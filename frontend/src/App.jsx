@@ -6,12 +6,16 @@ import ProfileModal from './components/ProfileModal';
 import AuthPage from './pages/AuthPage';
 import RoomsDashboard from './pages/RoomsDashboard';
 import RoomView from './pages/RoomView';
+import AdminDashboard from './pages/AdminDashboard';
 import { Split } from 'lucide-react';
 
 function MainApp() {
   const { user, loading } = useAuth();
   const [selectedRoomCode, setSelectedRoomCode] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(
+    window.location.hash === '#admin' || window.location.pathname === '/admin'
+  );
 
   if (loading) {
     return (
@@ -51,22 +55,43 @@ function MainApp() {
       {user && (
         <Navbar
           currentRoom={selectedRoomCode ? { code: selectedRoomCode, name: `Room ${selectedRoomCode}` } : null}
-          onSelectRoom={(code) => setSelectedRoomCode(code)}
-          onNavigateRooms={() => setSelectedRoomCode(null)}
+          onSelectRoom={(code) => {
+            setShowAdmin(false);
+            setSelectedRoomCode(code);
+          }}
+          onNavigateRooms={() => {
+            setShowAdmin(false);
+            setSelectedRoomCode(null);
+          }}
           onOpenProfile={() => setShowProfileModal(true)}
+          onOpenAdmin={() => {
+            setShowAdmin(true);
+            setSelectedRoomCode(null);
+          }}
         />
       )}
 
       <main className="app-main">
-        {!user ? (
-          <AuthPage />
+        {showAdmin ? (
+          <AdminDashboard
+            onBack={() => setShowAdmin(false)}
+            onSelectRoom={(code) => {
+              setShowAdmin(false);
+              setSelectedRoomCode(code);
+            }}
+          />
+        ) : !user ? (
+          <AuthPage onOpenAdmin={() => setShowAdmin(true)} />
         ) : selectedRoomCode ? (
           <RoomView
             roomCode={selectedRoomCode}
             onBack={() => setSelectedRoomCode(null)}
           />
         ) : (
-          <RoomsDashboard onSelectRoom={(code) => setSelectedRoomCode(code)} />
+          <RoomsDashboard
+            onSelectRoom={(code) => setSelectedRoomCode(code)}
+            onOpenAdmin={() => setShowAdmin(true)}
+          />
         )}
       </main>
 

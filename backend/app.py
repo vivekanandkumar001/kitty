@@ -1189,6 +1189,175 @@ def mark_notification_read(notif_id):
     return jsonify(n.to_dict())
 
 
+# ===========================================================================
+# Admin API (Superadmin Platform Dashboard)
+# ===========================================================================
+ADMIN_KEY = os.environ.get("ADMIN_KEY") or os.environ.get("ADMIN_SECRET") or "admin123"
+
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("is_admin"):
+            return jsonify({"error": "Admin authentication required"}), 403
+        return f(*args, **kwargs)
+    return wrapper
+
+
+@app.route("/api/admin/verify", methods=["GET"])
+def admin_verify():
+    return jsonify({"is_admin": bool(session.get("is_admin"))})
+
+
+@app.route("/api/admin/login", methods=["POST"])
+@limiter.limit("20 per minute")
+def admin_login():
+    data = request.get_json(force=True) or {}
+    key = (data.get("admin_key") or "").strip()
+    if not key or key != ADMIN_KEY:
+        return jsonify({"error": "Invalid admin passkey"}), 401
+    session["is_admin"] = True
+    return jsonify({"status": "authenticated", "role": "superadmin"})
+
+
+@app.route("/api/admin/logout", methods=["POST"])
+def admin_logout():
+    session.pop("is_admin", None)
+    return jsonify({"status": "logged_out"})
+
+
+@app.route("/api/admin/stats", methods=["GET"])
+@admin_required
+def admin_stats():
+    total_users = User.query.count()
+    total_rooms = Room.query.count()
+    total_expenses = Expense.query.filter_by(deleted=False).count()
+
+    total_volume_minor = db.session.query(
+        db.func.coalesce(db.func.sum(Expense.amount_minor), 0)
+    ).filter(Expense.deleted == False).scalar()
+
+    total_settled_minor = db.session.query(
+        db.func.coalesce(db.func.sum(Settlement.amount_minor), 0)
+    ).scalar()
+    total_settlements = Settlement.query.count()
+
+    # Category totals
+    cat_rows = db.session.query(
+        Expense.category,
+        db.func.count(Expense.id),
+        db.func.sum(Expense.amount_minor)
+    ).filter(Expense.deleted == False).group_by(Expense.category).all()
+
+    categories_breakdown = [
+        {"category": c[0], "count": int(c[1] or 0), "amount_minor": int(c[2] or 0)}
+        for c in cat_rows
+    ]
+    categories_breakdown.sort(key=lambda x: x["amount_minor"], reverse=True)
+
+    # Recent signups
+    recent_users = User.query.order_by(User.created_at.desc()).limit(6).all()
+    # Recent expenses
+    recent_expenses = Expense.query.filter_by(deleted=False).order_by(Expense.created_at.desc()).limit(6).all()
+
+    return jsonify({
+        "total_users": total_users,
+        "total_rooms": total_rooms,
+        "total_expenses": total_expenses,
+        "total_volume_minor": int(total_volume_minor or 0),
+        "total_settled_minor": int(total_settled_minor or 0),
+        "total_settlements": total_settlements,
+        "categories_breakdown": categories_breakdown,
+        "recent_users": [u.to_dict() for u in recent_users],
+        "recent_expenses": [e.to_dict() for e in recent_expenses]
+    })
+
+
+@app.route("/api/admin/users", methods=["GET"])
+@admin_required
+def admin_users():
+    q = (request.args.get("q") or "").strip().lower()
+    query = User.query
+    if q:
+        query = query.filter(
+            (User.name.ilike(f"%{q}%")) | (User.phone.ilike(f"%{q}%"))
+        )
+    users = query.order_by(User.created_at.desc()).limit(100).all()
+
+    result = []
+    for u in users:
+        rooms_count = RoomMembership.query.filter_by(user_id=u.id, status="active").count()
+        result.append({
+            "id": u.id,
+            "name": u.name,
+            "phone": u.phone,
+            "upi_id": u.upi_id,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+            "rooms_count": rooms_count
+        })
+    return jsonify(result)
+
+
+@app.route("/api/admin/rooms", methods=["GET"])
+@admin_required
+def admin_rooms():
+    q = (request.args.get("q") or "").strip().lower()
+    query = Room.query
+    if q:
+        query = query.filter(
+            (Room.name.ilike(f"%{q}%")) | (Room.code.ilike(f"%{q}%"))
+        )
+    rooms = query.order_by(Room.created_at.desc()).limit(100).all()
+
+    result = []
+    for r in rooms:
+        active_members_count = len(r.active_members())
+        creator = db.session.get(User, r.created_by) if r.created_by else None
+        total_spent = db.session.query(
+            db.func.coalesce(db.func.sum(Expense.amount_minor), 0)
+        ).filter(Expense.room_id == r.id, Expense.deleted == False).scalar()
+        expense_count = Expense.query.filter_by(room_id=r.id, deleted=False).count()
+
+        result.append({
+            "id": r.id,
+            "code": r.code,
+            "name": r.name,
+            "currency": r.currency,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "created_by": r.created_by,
+            "creator_name": creator.name if creator else "Unknown",
+            "creator_phone": creator.phone if creator else "",
+            "member_count": active_members_count,
+            "expense_count": expense_count,
+            "total_spent_minor": int(total_spent or 0)
+        })
+    return jsonify(result)
+
+
+@app.route("/api/admin/rooms/<int:room_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_room(room_id):
+    room = db.session.get(Room, room_id)
+    if not room:
+        return jsonify({"error": "Room not found"}), 404
+    db.session.delete(room)
+    db.session.commit()
+    return jsonify({"status": "deleted", "room_id": room_id})
+
+
+@app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_user(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    RoomMembership.query.filter_by(user_id=user_id).delete()
+    Notification.query.filter_by(user_id=user_id).delete()
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"status": "deleted", "user_id": user_id})
+
+
 if __name__ == "__main__":
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 7861))
