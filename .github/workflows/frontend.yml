@@ -1,0 +1,105 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - frontend
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend.yml'
+  pull_request:
+    branches:
+      - frontend
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: frontend
+
+jobs:
+  ci:
+    name: Build & Test (Frontend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend application
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CURRENCY_SYMBOL: '₹'
+
+      - name: Upload production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitty-frontend-dist
+          path: frontend/dist
+          retention-days: 7
+
+  deploy:
+    name: Deploy Frontend
+    needs: ci
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: kitty-frontend-dist
+          path: frontend/dist
+
+      # Vercel Deployment (Triggered if VERCEL_TOKEN secret is configured)
+      - name: Deploy to Vercel (Optional)
+        if: env.VERCEL_TOKEN != ''
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          vercel-args: '--prod'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      # Netlify Deployment (Triggered if NETLIFY_AUTH_TOKEN secret is configured)
+      - name: Deploy to Netlify (Optional)
+        if: env.NETLIFY_AUTH_TOKEN != ''
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './frontend/dist'
+          production-branch: 'main'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions #${{ github.run_number }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Deployment Status Summary
+        run: |
+          echo "=========================================="
+          echo "Frontend CI/CD Build Completed Successfully!"
+          echo "Artifact: kitty-frontend-dist"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "=========================================="

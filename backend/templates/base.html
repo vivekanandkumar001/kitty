@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang|default('en-IN') }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ site_name }} — {{ site_tagline }}{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ site_tagline }}{% endblock %}">
+<meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+<link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}">
+
+<meta name="theme-color" content="#0E1729">
+<meta name="color-scheme" content="light">
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:title" content="{% block og_title %}{{ site_name }} — {{ site_tagline }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ site_tagline }}{% endblock %}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:locale" content="en_IN">
+<meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='img/og-image.png') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ site_name }} — split rent and bills with your flatmates">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block tw_title %}{{ site_name }} — {{ site_tagline }}{% endblock %}">
+<meta name="twitter:description" content="{% block tw_description %}{{ site_tagline }}{% endblock %}">
+<meta name="twitter:image" content="{{ site_url }}{{ url_for('static', filename='img/og-image.png') }}">
+
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.svg') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a class="skip-link" href="#main">Skip to content</a>
+{% block body %}{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

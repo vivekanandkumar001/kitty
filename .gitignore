@@ -1,16 +1,33 @@
-node_modules/
 dist/
 build/
+node_modules/
 .cache/
 .env*
-.vite/
-vite.config.*.timestamp-*
-*.tsbuildinfo
+!.env.example
 *-debug.log*
 logs/
 *.log
 .claude-replay.*
 .tmp-*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.sqlite
+*.sqlite3
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
 
 # Platform-managed agentplat state, not project source. In the
 # client-initiated single-repo workspace layout (make's `Path: "."` spec) the

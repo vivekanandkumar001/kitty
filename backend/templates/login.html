@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Log in or create your account — {{ site_name }}{% endblock %}
+{% block description %}Log in to RoomSplit, or create a free account with your phone number and a 4-digit PIN to start splitting rent, bills and groceries with your flatmates.{% endblock %}
+{% block og_title %}Log in to {{ site_name }}{% endblock %}
+
+{% block body %}
+{% include "_site_header.html" %}
+
+<main id="main" class="auth-main">
+  <div class="container auth-layout">
+    <aside class="auth-aside" aria-hidden="true">
+      <h2>One shared ledger for your whole flat.</h2>
+      <p>Log a bill once. RoomSplit does the maths and tells everyone exactly who owes whom.</p>
+      <ul class="auth-aside-list">
+        <li>Equal, custom, percentage &amp; attendance splits</li>
+        <li>Fewest-possible settle-up payments</li>
+        <li>Rent &amp; utility bills on autopilot</li>
+      </ul>
+      <div class="auth-aside-card">
+        <span class="ledger-label">This month</span>
+        <span class="ledger-amount">₹3,809.00</span>
+        <span class="ledger-sub">across 3 flatmates</span>
+      </div>
+    </aside>
+
+    <div class="auth-card">
+      <h1 class="auth-title" id="authTitle">Welcome back</h1>
+      <p class="sub" id="authSub">Log in to see who owes whom.</p>
+      <div id="errorBox" class="error-msg" role="alert" hidden></div>
+
+      <form id="loginForm" novalidate>
+        <label class="field">Phone number
+          <input type="tel" id="loginPhone" name="phone" inputmode="numeric" autocomplete="tel"
+                 placeholder="98xxxxxxxx" required>
+        </label>
+        <label class="field">4-digit PIN
+          <input type="password" id="loginPin" name="pin" maxlength="4" inputmode="numeric"
+                 autocomplete="current-password" placeholder="••••" required>
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+      </form>
+
+      <form id="signupForm" hidden novalidate>
+        <label class="field">Your name
+          <input type="text" id="signupName" name="name" autocomplete="name" placeholder="Full name" required>
+        </label>
+        <label class="field">Phone number
+          <input type="tel" id="signupPhone" name="phone" inputmode="numeric" autocomplete="tel"
+                 placeholder="98xxxxxxxx" required>
+        </label>
+        <label class="field">Set a 4-digit PIN
+          <input type="password" id="signupPin" name="pin" maxlength="4" inputmode="numeric"
+                 autocomplete="new-password" placeholder="••••" required>
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+      </form>
+
+      <p class="auth-switch">
+        <span id="switchText">New here?</span>
+        <button type="button" id="switchBtn" class="link-btn">Create an account</button>
+      </p>
+    </div>
+  </div>
+</main>
+
+{% include "_site_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

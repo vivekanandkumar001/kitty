@@ -1,0 +1,13 @@
+<header class="app-header">
+  <div class="container app-header-inner">
+    <a class="brand" href="/rooms" aria-label="{{ site_name }} — your rooms">
+      <span class="brand-mark" aria-hidden="true">₹</span>
+      <span class="brand-name">{{ site_name }}</span>
+    </a>
+    <div class="app-header-actions">
+      {% include "_notifications.html" %}
+      {% if user %}<span class="app-user">{{ user.name }}</span>{% endif %}
+      <button id="logoutBtn" class="btn btn-ghost btn-sm" type="button">Log out</button>
+    </div>
+  </div>
+</header>

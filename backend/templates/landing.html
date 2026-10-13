@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}RoomSplit — Split rent, bills & groceries with flatmates (free) {% endblock %}
+{% block description %}RoomSplit is a free shared-expense tracker for flats, PGs and hostels. Split rent, electricity, wifi, maid and grocery bills, see who owes whom, and settle up with the fewest payments. No app to install.{% endblock %}
+{% block og_title %}RoomSplit — shared expenses for flats, PGs & roommates{% endblock %}
+{% block og_description %}Track rent, bills and groceries with your flatmates. Automatic balances, debt simplification and UPI settle-up. Free, browser-based, nothing to install.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json" nonce="{{ csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{ site_url }}/#website",
+      "url": "{{ site_url }}/",
+      "name": "{{ site_name }}",
+      "description": "{{ site_tagline }}"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "{{ site_name }}",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "url": "{{ site_url }}/",
+      "description": "{{ site_tagline }}",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+      "featureList": [
+        "Equal, custom, percentage and attendance-based expense splits",
+        "Automatic per-member balances",
+        "Debt simplification into the fewest payments",
+        "UPI settle-up links",
+        "Recurring rent and utility bills",
+        "Monthly CSV export"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {% for item in faqs %}
+        {
+          "@type": "Question",
+          "name": {{ item.q|tojson }},
+          "acceptedAnswer": { "@type": "Answer", "text": {{ item.a|tojson }} }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block body %}
+{% include "_site_header.html" %}
+
+<main id="main">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Shared expenses, sorted</p>
+        <h1>Split rent and bills with your flatmates — <span class="accent">without the spreadsheet.</span></h1>
+        <p class="lede">
+          RoomSplit keeps a single, trusted record of every shared expense for your flat, PG or hostel.
+          Log a bill once, and everyone's balance is worked out automatically. No more "who paid for the
+          cylinders?" in the group chat.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="/login?mode=signup">Create a free room</a>
+          <a class="btn btn-secondary btn-lg" href="/login">I already have an account</a>
+        </div>
+        <ul class="hero-points">
+          <li>Free, browser-based — nothing to install</li>
+          <li>Balances calculated on the server, never wrong</li>
+          <li>Works for 2 flatmates or a full PG floor</li>
+        </ul>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="ledger-demo">
+          <div class="ledger-demo-top">
+            <span class="ledger-label">Your balance</span>
+            <span class="ledger-amount owed">+₹1,240.00</span>
+          </div>
+          <p class="ledger-sub">owed to you this month</p>
+          <div class="ledger-rows">
+            <div class="ledger-row"><span>Electricity</span><span class="num">₹860.00</span></div>
+            <div class="ledger-row"><span>Groceries</span><span class="num">₹2,150.00</span></div>
+            <div class="ledger-row"><span>Wifi bill</span><span class="num">₹799.00</span></div>
+          </div>
+          <div class="ledger-settle">
+            <span class="ledger-settle-name">Riya → you</span>
+            <span class="ledger-settle-amt">₹620.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <header class="section-head">
+        <h2>Everything a shared house actually needs</h2>
+        <p>Built around the way flatmates and PG residents really split costs — not a generic bill-splitting app.</p>
+      </header>
+      <div class="feature-grid">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">÷</div>
+          <h3>Four ways to split</h3>
+          <p>Equally, by custom amounts, by percentage, or by attendance — so only the people home that day pay for the maid or the water can.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">₹</div>
+          <h3>Live balances</h3>
+          <p>Every member's net balance updates the moment an expense is logged. Everyone sees the same number, computed on the server.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">⇄</div>
+          <h3>Simplified settle-up</h3>
+          <p>RoomSplit reduces a tangle of bilateral debts to the fewest possible payments. Fewer UPI transfers, less awkwardness.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">↻</div>
+          <h3>Recurring bills</h3>
+          <p>Save rent, wifi and maid as templates and generate this month's expense in one tap — no re-typing every month.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">↗</div>
+          <h3>UPI settle-up</h3>
+          <p>Add your UPI ID and RoomSplit builds a payment link your flatmates can tap to pay from any banking app.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">⤓</div>
+          <h3>Monthly CSV export</h3>
+          <p>Download the month's ledger and closing balances as a spreadsheet — handy for moving out or splitting a deposit.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section section-alt" id="how">
+    <div class="container">
+      <header class="section-head">
+        <h2>Up and running in about a minute</h2>
+        <p>No downloads, no invites to accept, no onboarding call.</p>
+      </header>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">1</span>
+          <h3>Create your room</h3>
+          <p>Sign up with your phone number and a 4-digit PIN, then name your room — "Flat 302", "PG Floor 2", whatever fits.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">2</span>
+          <h3>Invite your flatmates</h3>
+          <p>Share the 6-character invite code or link. They join from any phone in seconds — there's nothing to install.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">3</span>
+          <h3>Log bills and settle up</h3>
+          <p>Add expenses as they happen, watch balances update, and settle with the fewest possible transfers.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <header class="section-head">
+        <h2>Frequently asked questions</h2>
+      </header>
+      <div class="faq">
+        {% for item in faqs %}
+        <details class="faq-item"{% if loop.first %} open{% endif %}>
+          <summary>{{ item.q }}</summary>
+          <div class="faq-answer"><p>{{ item.a }}</p></div>
+        </details>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <div class="container cta-inner">
+      <div>
+        <h2>Stop chasing people for money.</h2>
+        <p>Set up your room now — it takes less time than reading this page.</p>
+      </div>
+      <a class="btn btn-primary btn-lg" href="/login?mode=signup">Create a free room</a>
+    </div>
+  </section>
+</main>
+
+{% include "_site_footer.html" %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Your rooms — {{ site_name }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block body_class %}app-body{% endblock %}
+
+{% block body %}
+{% include "_app_header.html" %}
+
+<main id="main" class="container page">
+  <div class="page-head">
+    <div>
+      <h1>Your rooms</h1>
+      <p class="page-sub">Pick a room to see balances, or set up a new one below.</p>
+    </div>
+  </div>
+
+  <section aria-labelledby="rooms-heading">
+    <h2 id="rooms-heading" class="sr-only">Rooms</h2>
+    <div id="roomsGrid" class="rooms-grid"></div>
+    <p class="empty-state" id="roomsEmpty" hidden>
+      No rooms yet — create one or join with a code below.
+    </p>
+  </section>
+
+  <section class="room-actions-row" aria-label="Create or join a room">
+    <div class="action-card">
+      <h3>Create a room</h3>
+      <p class="action-hint">Start a fresh ledger for your flat, PG or hostel.</p>
+      <label class="field">Room name
+        <input type="text" id="newRoomName" placeholder="e.g. Flat 302">
+      </label>
+      <button class="btn btn-primary btn-block" id="createRoomBtn" type="button">Create room</button>
+    </div>
+    <div class="action-card">
+      <h3>Join with a code</h3>
+      <p class="action-hint">Got an invite code from a flatmate? Drop it here.</p>
+      <label class="field">Invite code
+        <input type="text" id="joinCode" placeholder="e.g. RL9J87" autocomplete="off"
+               autocapitalize="characters" style="text-transform:uppercase">
+      </label>
+      <button class="btn btn-primary btn-block" id="joinRoomBtn" type="button">Join room</button>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rooms.js') }}"></script>
+{% endblock %}
