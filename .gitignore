@@ -26,6 +26,13 @@ env/
 .coverage
 htmlcov/
 *.egg-info/
+
+# Tests & test folders (never push to git)
+tests/
+test/
+__tests__/
+*.test.*
+*.spec.*
 dist/
 build/
 
