@@ -4,10 +4,15 @@ import io
 import re
 import secrets
 import time
+import sys
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from datetime import datetime, date
 from functools import wraps
 from urllib.parse import quote
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from flask import (Flask, request, jsonify, render_template, session, redirect,
                    url_for, Response, g)
@@ -21,7 +26,6 @@ from models import (db, User, Room, RoomMembership, Expense, ExpenseSplit,
                      CATEGORIES, SPLIT_TYPES, gen_code)
 from engine import compute_split, compute_balances, simplify_debts, SplitError
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Load environment variables from backend/.env
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
