@@ -55,12 +55,6 @@ export default function AuthPage() {
     }
   };
 
-  const handleQuickDemo = () => {
-    setName('Demo Roomie');
-    setPhone('9876543210');
-    setPin('1234');
-  };
-
   return (
     <div
       style={{
@@ -330,25 +324,6 @@ export default function AuthPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Fill Button */}
-          <div
-            style={{
-              marginTop: '20px',
-              paddingTop: '16px',
-              borderTop: '1px solid var(--border-subtle)',
-              textAlign: 'center',
-            }}
-          >
-            <button
-              type="button"
-              className="btn btn-subtle btn-sm"
-              style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}
-              onClick={handleQuickDemo}
-            >
-              Fill Sample {mode === 'signup' ? 'Registration' : 'Credentials'} (9876543210 / 1234)
-            </button>
-          </div>
         </div>
       </div>
     </div>
