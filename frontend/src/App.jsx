@@ -7,7 +7,8 @@ import AuthPage from './pages/AuthPage';
 import RoomsDashboard from './pages/RoomsDashboard';
 import RoomView from './pages/RoomView';
 import AdminDashboard from './pages/AdminDashboard';
-import { Split, CodeXml, ShieldCheck } from 'lucide-react';
+import { CodeXml, ShieldCheck } from 'lucide-react';
+import Logo from './components/Logo';
 
 function MainApp() {
   const { user, loading } = useAuth();
@@ -20,9 +21,7 @@ function MainApp() {
   if (loading) {
     return (
       <div className="loading-screen">
-        <div className="loading-mark">
-          <Split size={26} strokeWidth={2.4} />
-        </div>
+        <Logo size={56} className="loading-logo" />
         <div style={{ fontWeight: 600, fontSize: '0.92rem', letterSpacing: '-0.01em' }}>
           Loading Kitty…
         </div>

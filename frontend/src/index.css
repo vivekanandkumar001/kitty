@@ -8,99 +8,42 @@
    1. Design Tokens
    ------------------------------------------------------------------ */
 :root,
-[data-theme="dark"] {
-  color-scheme: dark;
+[data-theme="light"] {
+  color-scheme: light;
 
   --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Backgrounds — deep navy-charcoal layered slate */
-  --bg-app: #080D1A;
-  --bg-surface: #0D1424;
-  --bg-card: #101A2E;
-  --bg-card-hover: #152039;
-  --bg-elevated: #1A2740;
-  --bg-glass: rgba(13, 20, 36, 0.72);
-  --bg-input: #0F1930;
-  --grid-line: rgba(148, 184, 255, 0.055);
-  --glow-a: rgba(16, 185, 129, 0.14);
-  --glow-b: rgba(99, 102, 241, 0.16);
-
-  /* Borders */
-  --border-subtle: rgba(148, 163, 184, 0.10);
-  --border-card: rgba(148, 163, 184, 0.16);
-  --border-hover: rgba(148, 163, 184, 0.34);
-  --border-focus: #10B981;
-
-  /* Text */
-  --text-main: #E9EEF9;
-  --text-muted: #94A3C0;
-  --text-dim: #5D6C8D;
-
-  /* Accents */
-  --emerald: #10B981;
-  --emerald-hover: #34D399;
-  --emerald-deep: #059669;
-  --emerald-glow: rgba(16, 185, 129, 0.35);
-  --emerald-subtle: rgba(16, 185, 129, 0.12);
-  --emerald-ink: #34D399;
-
-  --coral: #F43F5E;
-  --coral-hover: #FB7185;
-  --coral-glow: rgba(244, 63, 94, 0.3);
-  --coral-subtle: rgba(244, 63, 94, 0.12);
-  --coral-ink: #FB7185;
-
-  --amber: #F59E0B;
-  --amber-subtle: rgba(245, 158, 11, 0.13);
-  --amber-ink: #FBBF24;
-
-  --indigo: #6366F1;
-  --indigo-hover: #818CF8;
-  --indigo-subtle: rgba(99, 102, 241, 0.16);
-  --indigo-ink: #A5B4FC;
-
-  --sky: #38BDF8;
-  --sky-subtle: rgba(56, 189, 248, 0.12);
-
-  /* Elevation */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 12px 32px -10px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 28px 64px -16px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 44px rgba(16, 185, 129, 0.18);
-  --ring: 0 0 0 3px rgba(16, 185, 129, 0.28);
-
-  --max-w: 1180px;
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-
-  --bg-app: #F1F5FB;
+  /* Backgrounds — mint-white canvas, warm paper white cards (WaKit reference) */
+  --bg-app: #F4FAF7;
   --bg-surface: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #F8FAFE;
+  --bg-card-hover: #EEF7F2;
   --bg-elevated: #FFFFFF;
-  --bg-glass: rgba(255, 255, 255, 0.78);
-  --bg-input: #F4F7FD;
-  --grid-line: rgba(15, 27, 46, 0.05);
-  --glow-a: rgba(5, 150, 105, 0.10);
-  --glow-b: rgba(79, 70, 229, 0.10);
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-input: #EFF7F3;
+  --grid-line: rgba(6, 78, 59, 0.055);
+  --glow-a: rgba(16, 185, 129, 0.16);
+  --glow-b: rgba(6, 78, 59, 0.10);
 
-  --border-subtle: rgba(15, 27, 46, 0.08);
-  --border-card: rgba(15, 27, 46, 0.13);
-  --border-hover: rgba(15, 27, 46, 0.30);
+  /* Borders — green-tinted hairlines */
+  --border-subtle: rgba(6, 78, 59, 0.09);
+  --border-card: rgba(6, 78, 59, 0.15);
+  --border-hover: rgba(6, 78, 59, 0.32);
   --border-focus: #059669;
 
-  --text-main: #0F1B2E;
-  --text-muted: #4E5F7D;
-  --text-dim: #8598B6;
+  /* Text — deep slate-green ink */
+  --text-main: #0F1F17;
+  --text-muted: #3F5A4C;
+  --text-dim: #7A948A;
 
+  /* Accents — faith green family */
   --emerald: #059669;
   --emerald-hover: #047857;
   --emerald-deep: #047857;
-  --emerald-glow: rgba(5, 150, 105, 0.28);
-  --emerald-subtle: rgba(5, 150, 105, 0.09);
+  --emerald-brand: #064E3B;
+  --emerald-glow: rgba(5, 150, 105, 0.30);
+  --emerald-subtle: rgba(5, 150, 105, 0.10);
   --emerald-ink: #047857;
 
   --coral: #E11D48;
@@ -112,6 +55,7 @@
   --amber: #D97706;
   --amber-subtle: rgba(217, 119, 6, 0.12);
   --amber-ink: #B45309;
+  --gold: #C9952C;
 
   --indigo: #4F46E5;
   --indigo-hover: #4338CA;
@@ -121,11 +65,71 @@
   --sky: #0284C7;
   --sky-subtle: rgba(2, 132, 199, 0.10);
 
-  --shadow-sm: 0 1px 2px rgba(15, 27, 46, 0.07), 0 1px 3px rgba(15, 27, 46, 0.05);
-  --shadow-md: 0 14px 36px -14px rgba(15, 27, 46, 0.22);
-  --shadow-lg: 0 30px 70px -18px rgba(15, 27, 46, 0.30);
-  --shadow-glow: 0 8px 36px rgba(5, 150, 105, 0.16);
+  /* Elevation — soft green-tinted shadows */
+  --shadow-sm: 0 1px 2px rgba(6, 78, 59, 0.08), 0 1px 3px rgba(6, 78, 59, 0.06);
+  --shadow-md: 0 14px 36px -14px rgba(6, 78, 59, 0.25);
+  --shadow-lg: 0 30px 70px -18px rgba(6, 78, 59, 0.35);
+  --shadow-glow: 0 8px 36px rgba(5, 150, 105, 0.18);
   --ring: 0 0 0 3px rgba(5, 150, 105, 0.22);
+
+  --max-w: 1180px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-app: #071710;
+  --bg-surface: #0D221A;
+  --bg-card: #112A20;
+  --bg-card-hover: #173527;
+  --bg-elevated: #183827;
+  --bg-glass: rgba(13, 34, 26, 0.78);
+  --bg-input: #133024;
+  --grid-line: rgba(110, 231, 183, 0.055);
+  --glow-a: rgba(16, 185, 129, 0.18);
+  --glow-b: rgba(52, 211, 153, 0.13);
+
+  --border-subtle: rgba(110, 231, 183, 0.09);
+  --border-card: rgba(110, 231, 183, 0.16);
+  --border-hover: rgba(110, 231, 183, 0.34);
+  --border-focus: #34D399;
+
+  --text-main: #E9F6EE;
+  --text-muted: #9CC3AE;
+  --text-dim: #5F8A74;
+
+  --emerald: #10B981;
+  --emerald-hover: #34D399;
+  --emerald-deep: #059669;
+  --emerald-brand: #064E3B;
+  --emerald-glow: rgba(16, 185, 129, 0.38);
+  --emerald-subtle: rgba(16, 185, 129, 0.13);
+  --emerald-ink: #34D399;
+
+  --coral: #F43F5E;
+  --coral-hover: #FB7185;
+  --coral-glow: rgba(244, 63, 94, 0.3);
+  --coral-subtle: rgba(244, 63, 94, 0.12);
+  --coral-ink: #FB7185;
+
+  --amber: #F59E0B;
+  --amber-subtle: rgba(245, 158, 11, 0.13);
+  --amber-ink: #FBBF24;
+  --gold: #E3B959;
+
+  --indigo: #6366F1;
+  --indigo-hover: #818CF8;
+  --indigo-subtle: rgba(99, 102, 241, 0.16);
+  --indigo-ink: #A5B4FC;
+
+  --sky: #38BDF8;
+  --sky-subtle: rgba(56, 189, 248, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 12px 32px -10px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 28px 64px -16px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 44px rgba(16, 185, 129, 0.20);
+  --ring: 0 0 0 3px rgba(52, 211, 153, 0.26);
 }
 
 :root {
@@ -266,22 +270,14 @@ input, select, textarea {
   color: var(--text-muted);
 }
 
-.loading-mark {
-  width: 56px;
-  height: 56px;
+.loading-logo {
   border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  background: linear-gradient(135deg, #10B981 0%, #6366F1 100%);
-  box-shadow: var(--shadow-glow);
   animation: markPulse 1.6s ease-in-out infinite;
 }
 
 @keyframes markPulse {
-  0%, 100% { transform: scale(1); box-shadow: var(--shadow-glow); }
-  50% { transform: scale(1.06); box-shadow: 0 0 64px rgba(16, 185, 129, 0.35); }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.35)); }
+  50% { transform: scale(1.07); filter: drop-shadow(0 0 34px rgba(16, 185, 129, 0.5)); }
 }
 
 /* ------------------------------------------------------------------
@@ -320,20 +316,6 @@ input, select, textarea {
   cursor: pointer;
 }
 
-.brand-icon-wrap {
-  width: 37px;
-  height: 37px;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  background: linear-gradient(135deg, #10B981 0%, #0E9F8A 55%, #6366F1 130%);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255,255,255,0.35);
-  transition: transform var(--t-base) var(--ease-out);
-}
-.nav-brand:hover .brand-icon-wrap { transform: rotate(-6deg) scale(1.05); }
-
 .brand-badge {
   font-size: 0.62rem;
   font-weight: 700;
@@ -345,6 +327,13 @@ input, select, textarea {
   background: var(--emerald-subtle);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
+.logo-mark {
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(6, 78, 59, 0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.nav-brand:hover .logo-mark { transform: rotate(-6deg) scale(1.06); }
 
 .nav-crumb {
   display: flex;
@@ -1277,9 +1266,9 @@ select.form-control {
   padding: 48px 56px;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 75% 60% at 20% 0%, rgba(16,185,129,0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 95% 100%, rgba(99,102,241,0.28) 0%, transparent 60%),
-    linear-gradient(160deg, #0B1224 0%, #0D1730 55%, #0A1020 100%);
+    radial-gradient(ellipse 75% 60% at 20% 0%, rgba(52, 211, 153, 0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 95% 100%, rgba(6, 78, 59, 0.55) 0%, transparent 60%),
+    linear-gradient(160deg, #05241A 0%, #073B2A 50%, #03160F 100%);
   color: #E9EEF9;
   border-right: 1px solid var(--border-subtle);
 }
@@ -1288,8 +1277,8 @@ select.form-control {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(148,184,255,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,184,255,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(167, 243, 208, 0.065) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 243, 208, 0.065) 1px, transparent 1px);
   background-size: 40px 40px;
   -webkit-mask-image: radial-gradient(ellipse 90% 90% at 30% 20%, black 20%, transparent 70%);
           mask-image: radial-gradient(ellipse 90% 90% at 30% 20%, black 20%, transparent 70%);
@@ -1323,7 +1312,7 @@ select.form-control {
   color: #F2F6FF;
 }
 .auth-headline .grad {
-  background: linear-gradient(120deg, #34D399 0%, #6EE7B7 35%, #A5B4FC 100%);
+  background: linear-gradient(120deg, #6EE7B7 0%, #34D399 40%, #E3B959 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

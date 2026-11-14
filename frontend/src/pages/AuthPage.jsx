@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../theme';
+import Logo from '../components/Logo';
 import {
-  Split,
   Phone,
   KeyRound,
   User as UserIcon,
@@ -142,9 +142,7 @@ export default function AuthPage({ onOpenAdmin }) {
       <div className="auth-form-pane">
         <div className="auth-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px' }}>
-            <div className="brand-icon-wrap" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
-              <Split size={22} strokeWidth={2.4} />
-            </div>
+            <Logo size={46} className="logo-mark" />
             <div>
               <div style={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.02em' }}>
                 {mode === 'login' ? 'Sign in to Kitty' : 'Create your Kitty ID'}

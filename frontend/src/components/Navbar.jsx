@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../theme';
+import Logo from './Logo';
 import {
-  Split,
   Bell,
   LogOut,
   User,
@@ -81,9 +81,7 @@ export default function Navbar({ onSelectRoom, onNavigateRooms, onOpenProfile, o
             style={{ textAlign: 'left' }}
             aria-label="Kitty home"
           >
-            <div className="brand-icon-wrap">
-              <Split size={20} strokeWidth={2.4} />
-            </div>
+            <Logo size={36} className="logo-mark" />
             <span>Kitty</span>
             <span className="brand-badge">Enterprise</span>
           </button>

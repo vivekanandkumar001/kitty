@@ -1,4 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Kitty">
-  <rect width="64" height="64" rx="15" fill="#0E1729"/>
-  <path d="M22 17h20M22 26h20M30 17c6 0 8 4 8 8s-3 6-8 6h-8l16 16" fill="none" stroke="#0CA678" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Kitty — shared expenses, settled">
+  <defs>
+    <linearGradient id="kitty-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12B76A"/>
+      <stop offset="0.55" stop-color="#079455"/>
+      <stop offset="1" stop-color="#064E3B"/>
+    </linearGradient>
+    <linearGradient id="kitty-cat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2FEF6"/>
+      <stop offset="1" stop-color="#C9EFD8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="15" fill="url(#kitty-bg)"/>
+  <rect x="1.2" y="1.2" width="61.6" height="61.6" rx="13.8" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="2"/>
+
+  <!-- Geometric cat silhouette: ears + rounded head -->
+  <g fill="url(#kitty-cat)">
+    <path d="M18 27.5 13.5 9.8c4.9 1.3 9.4 4.9 12.9 10.4L18 27.5Z"/>
+    <path d="M46 27.5 50.5 9.8c-4.9 1.3-9.4 4.9-12.9 10.4L46 27.5Z"/>
+    <ellipse cx="32" cy="39" rx="17.5" ry="14.5"/>
+  </g>
+
+  <!-- Eyes -->
+  <circle cx="24" cy="37.5" r="2.2" fill="#064E3B"/>
+  <circle cx="40" cy="37.5" r="2.2" fill="#064E3B"/>
+
+  <!-- Gold nose — the split point -->
+  <path d="M32 43.8l2.7 2.5-2.7 2.5-2.7-2.5L32 43.8Z" fill="#E3B959"/>
 </svg>
