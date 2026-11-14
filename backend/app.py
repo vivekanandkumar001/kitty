@@ -593,16 +593,19 @@ def otp_request():
                         "retry_after": wait}), 429
 
     code = f"{secrets.randbelow(10 ** OTP_LENGTH):0{OTP_LENGTH}d}"
+
+    # Deliver first; only persist the challenge if the SMS actually goes out,
+    # so a misconfigured provider never leaves junk OTP rows behind.
+    delivered, channel, detail = _deliver_otp(phone, code)
+    if not delivered:
+        return jsonify({"error": detail}), 503
+
     db.session.add(OtpCode(
         phone=phone, purpose=purpose,
         code_hash=_gph(code),
         expires_at=now + _timedelta(seconds=OTP_TTL_SECONDS),
     ))
     db.session.commit()
-
-    delivered, channel, detail = _deliver_otp(phone, code)
-    if not delivered:
-        return jsonify({"error": detail}), 503
 
     resp = {"ok": True, "ttl_seconds": OTP_TTL_SECONDS,
             "resend_after": OTP_RESEND_COOLDOWN, "channel": channel}
