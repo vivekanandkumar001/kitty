@@ -24,11 +24,11 @@ export function ToastProvider({ children }) {
       {children}
       <div className="toast-portal">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast-card toast-${toast.type}`}>
-            <span className="toast-icon">
-              {toast.type === 'success' && <CheckCircle size={18} />}
-              {toast.type === 'error' && <AlertCircle size={18} />}
-              {toast.type === 'info' && <Info size={18} />}
+          <div key={toast.id} className={`toast-card toast-${toast.type}`} role="status">
+            <span className="toast-icon-chip">
+              {toast.type === 'success' && <CheckCircle size={17} />}
+              {toast.type === 'error' && <AlertCircle size={17} />}
+              {toast.type === 'info' && <Info size={17} />}
             </span>
             <div className="toast-message">{toast.message}</div>
             <button

@@ -11,6 +11,10 @@ import {
   ArrowRight,
   Receipt,
   Repeat,
+  Scale,
+  Lock,
+  BadgeCheck,
+  Landmark,
 } from 'lucide-react';
 
 export default function AuthPage({ onOpenAdmin }) {
@@ -56,167 +60,100 @@ export default function AuthPage({ onOpenAdmin }) {
   };
 
   return (
-    <div
-      style={{
-        minHeight: 'calc(100vh - 68px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '30px 20px',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '920px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '30px',
-          alignItems: 'center',
-        }}
-      >
-        {/* Left Column: Hero & Value Prop */}
-        <div>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 14px',
-              background: 'var(--emerald-subtle)',
-              border: '1px solid rgba(16, 185, 129, 0.25)',
-              borderRadius: 'var(--radius-full)',
-              color: 'var(--emerald-ink)',
-              fontSize: '0.82rem',
-              fontWeight: 600,
-              marginBottom: '20px',
-            }}
-          >
-            <Zap size={14} /> Shared flat expense tracker
-          </div>
+    <div className="auth-shell">
+      {/* ── Left: hero / value proposition ─────────────────────────── */}
+      <aside className="auth-hero">
+        <span className="auth-badge">
+          <Zap size={13} strokeWidth={2.5} /> Shared living, settled to the last paisa
+        </span>
 
-          <h1
-            style={{
-              fontSize: 'clamp(2rem, 5vw, 2.8rem)',
-              lineHeight: 1.15,
-              fontWeight: 800,
-              letterSpacing: '-0.03em',
-              margin: '0 0 16px',
-            }}
-          >
-            Split expenses with roommates{' '}
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #10B981 0%, #6366F1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              without the headache.
+        <h1 className="auth-headline">
+          One flat.
+          <br />
+          Every paisa,
+          <br />
+          <span className="grad">accounted for.</span>
+        </h1>
+
+        <p className="auth-sub">
+          Kitty is the audit-grade ledger for flats, PGs and roommates — mathematically
+          exact splits, deterministic debt simplification and one-tap UPI settlement,
+          engineered so nobody ever has to chase anyone again.
+        </p>
+
+        <div className="auth-checklist">
+          <div className="auth-check">
+            <span className="check-dot"><Scale size={13} strokeWidth={2.5} /></span>
+            <span>
+              <strong>Deterministic debt simplification</strong> — N bilateral debts collapse
+              into the mathematically minimal number of transfers. Same input, same output, every time.
             </span>
-          </h1>
-
-          <p
-            style={{
-              color: 'var(--text-muted)',
-              fontSize: '1.05rem',
-              lineHeight: 1.6,
-              marginBottom: '28px',
-            }}
-          >
-            Log rent, electricity, groceries and maid bills once. Kitty calculates
-            exact balances with mathematical debt simplification and one-tap UPI settlement.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--emerald-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--emerald-ink)',
-                }}
-              >
-                <Zap size={17} />
-              </div>
-              <span style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 500 }}>
-                Smart debt simplification (minimum transactions)
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--indigo-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--indigo-ink)',
-                }}
-              >
-                <Repeat size={17} />
-              </div>
-              <span style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 500 }}>
-                Monthly recurring templates for rent & wifi bills
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--amber-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--amber-ink)',
-                }}
-              >
-                <Receipt size={17} />
-              </div>
-              <span style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 500 }}>
-                Custom splits: equal, exact paise, percentage, attendance
-              </span>
-            </div>
+          </div>
+          <div className="auth-check">
+            <span className="check-dot"><Landmark size={13} strokeWidth={2.5} /></span>
+            <span>
+              <strong>Integer-paise ledger</strong> — every amount stored and computed in whole
+              paise. Zero float drift, ever.
+            </span>
+          </div>
+          <div className="auth-check">
+            <span className="check-dot"><Repeat size={13} strokeWidth={2.5} /></span>
+            <span>
+              <strong>Recurring automation</strong> — rent, wifi, maid, mess. One click and the
+              month generates itself, with reminders that clear automatically.
+            </span>
+          </div>
+          <div className="auth-check">
+            <span className="check-dot"><Receipt size={13} strokeWidth={2.5} /></span>
+            <span>
+              <strong>Every split type</strong> — equal, exact paise, percentage, or attendance-weighted,
+              with dispute &amp; resolve built in.
+            </span>
           </div>
         </div>
 
-        {/* Right Column: Auth Card */}
-        <div className="card" style={{ padding: '32px' }}>
-          {/* Mode Switcher */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              background: 'var(--bg-surface)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '4px',
-              marginBottom: '24px',
-              border: '1px solid var(--border-subtle)',
-            }}
-          >
+        <div className="auth-foot">
+          <span><span className="mono">100%</span> integer-paise math</span>
+          <span aria-hidden="true">·</span>
+          <span><span className="mono">0</span> float drift</span>
+          <span aria-hidden="true">·</span>
+          <span><span className="mono">1-tap</span> UPI settlement</span>
+        </div>
+      </aside>
+
+      {/* ── Right: sign in / sign up card ─────────────────────────── */}
+      <div className="auth-form-pane">
+        <div className="auth-card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px' }}>
+            <div className="brand-icon-wrap" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
+              <Split size={22} strokeWidth={2.4} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.02em' }}>
+                {mode === 'login' ? 'Sign in to Kitty' : 'Create your Kitty ID'}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                {mode === 'login' ? 'Your rooms are waiting.' : 'Free forever. No card required.'}
+              </div>
+            </div>
+          </div>
+
+          {/* Mode switcher */}
+          <div className="segmented" role="tablist" aria-label="Authentication mode">
             <button
               type="button"
-              className={`tab-btn ${mode === 'login' ? 'active' : ''}`}
-              style={{ justifyContent: 'center', padding: '9px' }}
+              role="tab"
+              aria-selected={mode === 'login'}
+              className={`segmented-btn ${mode === 'login' ? 'active' : ''}`}
               onClick={() => setMode('login')}
             >
               Sign In
             </button>
             <button
               type="button"
-              className={`tab-btn ${mode === 'signup' ? 'active' : ''}`}
-              style={{ justifyContent: 'center', padding: '9px' }}
+              role="tab"
+              aria-selected={mode === 'signup'}
+              className={`segmented-btn ${mode === 'signup' ? 'active' : ''}`}
               onClick={() => setMode('signup')}
             >
               New Account
@@ -226,109 +163,91 @@ export default function AuthPage({ onOpenAdmin }) {
           <form onSubmit={handleSubmit}>
             {mode === 'signup' && (
               <div className="form-group">
-                <label htmlFor="auth-name">Your Full Name</label>
-                <div style={{ position: 'relative' }}>
+                <label htmlFor="auth-name">Full Name</label>
+                <div className="input-icon-wrap">
                   <input
                     id="auth-name"
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Jordan Lee"
+                    placeholder="e.g. Vivekanand Kumar"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
                     required
                   />
-                  <UserIcon
-                    size={17}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: 'var(--text-dim)',
-                    }}
-                  />
+                  <UserIcon size={17} />
                 </div>
               </div>
             )}
 
             <div className="form-group">
               <label htmlFor="auth-phone">Mobile Number</label>
-              <div style={{ position: 'relative' }}>
+              <div className="input-icon-wrap">
                 <input
                   id="auth-phone"
                   type="tel"
-                  className="form-control"
-                  placeholder="10-digit mobile number"
+                  className="form-control mono"
+                  placeholder="98765 43210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   maxLength={15}
+                  autoComplete="tel"
+                  inputMode="numeric"
                   required
                 />
-                <Phone
-                  size={17}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'var(--text-dim)',
-                  }}
-                />
+                <Phone size={17} />
               </div>
-              <div className="form-hint">Used to identify you in your shared rooms</div>
+              <div className="form-hint">Used to identify you across your rooms. Never shown to other members.</div>
             </div>
 
             <div className="form-group">
               <label htmlFor="auth-pin">4-Digit Security PIN</label>
-              <div style={{ position: 'relative' }}>
+              <div className="input-icon-wrap">
                 <input
                   id="auth-pin"
                   type="password"
                   className="form-control mono"
                   placeholder="••••"
                   value={pin}
-                  onChange={(e) => setPin(e.target.value)}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                   maxLength={4}
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  inputMode="numeric"
                   required
                 />
-                <KeyRound
-                  size={17}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'var(--text-dim)',
-                  }}
-                />
+                <KeyRound size={17} />
               </div>
-              <div className="form-hint">Simple PIN for quick phone sign-in</div>
+              <div className="form-hint">
+                <Lock size={11} style={{ verticalAlign: '-1px', marginRight: '4px' }} />
+                Hashed &amp; salted (scrypt) — never stored or logged in plaintext.
+              </div>
             </div>
 
             <button
               type="submit"
               className="btn btn-primary btn-lg"
-              style={{ width: '100%', marginTop: '10px' }}
+              style={{ width: '100%', marginTop: '6px' }}
               disabled={loading}
             >
               {loading ? (
-                'Processing...'
+                'Verifying…'
               ) : mode === 'login' ? (
-                <>
-                  Sign In to Kitty <ArrowRight size={18} />
-                </>
+                <>Sign in to your rooms <ArrowRight size={18} /></>
               ) : (
-                <>
-                  Create Account <ArrowRight size={18} />
-                </>
+                <>Create account <ArrowRight size={18} /></>
               )}
             </button>
           </form>
 
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '16px', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+            <BadgeCheck size={13} style={{ color: 'var(--emerald-ink)' }} />
+            Server-verified sessions · rate-limited · lockout protected
+          </div>
+
           {onOpenAdmin && (
             <div
               style={{
-                marginTop: '18px',
+                marginTop: '14px',
                 textAlign: 'center',
                 paddingTop: '14px',
                 borderTop: '1px solid var(--border-subtle)',
@@ -337,10 +256,10 @@ export default function AuthPage({ onOpenAdmin }) {
               <button
                 type="button"
                 className="btn btn-subtle btn-sm"
-                style={{ fontSize: '0.8rem', color: 'var(--text-dim)', gap: '6px' }}
+                style={{ fontSize: '0.78rem', gap: '6px' }}
                 onClick={onOpenAdmin}
               >
-                <ShieldCheck size={14} style={{ color: 'var(--indigo-ink)' }} /> Superadmin Portal
+                <ShieldCheck size={13} style={{ color: 'var(--indigo-ink)' }} /> Superadmin console
               </button>
             </div>
           )}

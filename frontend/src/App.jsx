@@ -7,7 +7,7 @@ import AuthPage from './pages/AuthPage';
 import RoomsDashboard from './pages/RoomsDashboard';
 import RoomView from './pages/RoomView';
 import AdminDashboard from './pages/AdminDashboard';
-import { Split } from 'lucide-react';
+import { Split, CodeXml, ShieldCheck } from 'lucide-react';
 
 function MainApp() {
   const { user, loading } = useAuth();
@@ -19,35 +19,20 @@ function MainApp() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '16px',
-          color: 'var(--text-muted)',
-        }}
-      >
-        <div
-          style={{
-            width: '44px',
-            height: '44px',
-            background: 'linear-gradient(135deg, var(--emerald) 0%, var(--indigo) 100%)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            animation: 'pulse 1.5s infinite ease-in-out',
-          }}
-        >
-          <Split size={24} />
+      <div className="loading-screen">
+        <div className="loading-mark">
+          <Split size={26} strokeWidth={2.4} />
         </div>
-        <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Loading Kitty...</div>
+        <div style={{ fontWeight: 600, fontSize: '0.92rem', letterSpacing: '-0.01em' }}>
+          Loading Kitty…
+        </div>
       </div>
     );
+  }
+
+  // Not signed in → full-bleed auth experience (no chrome)
+  if (!user && !showAdmin) {
+    return <AuthPage onOpenAdmin={() => setShowAdmin(true)} />;
   }
 
   return (
@@ -80,8 +65,6 @@ function MainApp() {
               setSelectedRoomCode(code);
             }}
           />
-        ) : !user ? (
-          <AuthPage onOpenAdmin={() => setShowAdmin(true)} />
         ) : selectedRoomCode ? (
           <RoomView
             roomCode={selectedRoomCode}
@@ -94,6 +77,25 @@ function MainApp() {
           />
         )}
       </main>
+
+      <footer className="app-footer">
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <ShieldCheck size={13} style={{ color: 'var(--emerald-ink)' }} />
+          Kitty Enterprise — paise-precise shared expenses
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <span className="mono">integer-paise · deterministic · auditable</span>
+          <a
+            href="https://github.com/vivekanandkumar001/kitty"
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}
+            className="footer-link"
+          >
+            <CodeXml size={14} /> vivekanandkumar001/kitty
+          </a>
+        </span>
+      </footer>
 
       {user && (
         <ProfileModal

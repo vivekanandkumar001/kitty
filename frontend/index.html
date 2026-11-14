@@ -1,13 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Kitty — Free expense sharing for flatmates, PG residents, and roommates. Track rent, groceries, and bills with simplified debt settlements." />
+    <meta name="description" content="Kitty — Enterprise-grade shared expenses for flatmates, PG residents, and roommates. Split rent, groceries and bills with mathematically exact, paise-precise ledgers, deterministic debt simplification and one-tap UPI settlement." />
+    <meta name="theme-color" content="#080D1A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F1F5FB" media="(prefers-color-scheme: light)" />
+    <meta property="og:title" content="Kitty — Split rent, bills & groceries with roommates" />
+    <meta property="og:description" content="Paise-precise shared expense ledger for flats, PGs and roommates. Exact splits, deterministic debt simplification, UPI settlement." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kitty.progeni.live/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // Apply saved theme before first paint to avoid a flash of the wrong theme
+      (function () {
+        try {
+          var saved = window.localStorage.getItem('kitty-theme');
+          var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Kitty — Split rent, bills & groceries with roommates</title>
   </head>
   <body>

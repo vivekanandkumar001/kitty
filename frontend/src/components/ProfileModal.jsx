@@ -39,11 +39,11 @@ export default function ProfileModal({ isOpen, onClose }) {
   if (!user) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="User Profile & Payment Details">
+    <Modal isOpen={isOpen} onClose={onClose} title="Profile & settlement details" subtitle="How roommates identify you and pay you back.">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="profile-phone">Registered Phone</label>
-          <div style={{ position: 'relative' }}>
+          <div className="input-icon-wrap">
             <input
               id="profile-phone"
               type="text"
@@ -52,23 +52,14 @@ export default function ProfileModal({ isOpen, onClose }) {
               disabled
               style={{ opacity: 0.7, cursor: 'not-allowed' }}
             />
-            <Phone
-              size={17}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--text-dim)',
-              }}
-            />
+            <Phone size={17} />
           </div>
           <div className="form-hint">Phone number is fixed for your account.</div>
         </div>
 
         <div className="form-group">
           <label htmlFor="profile-name">Display Name</label>
-          <div style={{ position: 'relative' }}>
+          <div className="input-icon-wrap">
             <input
               id="profile-name"
               type="text"
@@ -78,22 +69,13 @@ export default function ProfileModal({ isOpen, onClose }) {
               placeholder="Your full name"
               required
             />
-            <User
-              size={17}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--text-dim)',
-              }}
-            />
+            <User size={17} />
           </div>
         </div>
 
         <div className="form-group">
           <label htmlFor="profile-upi">UPI Virtual Payment Address (VPA)</label>
-          <div style={{ position: 'relative' }}>
+          <div className="input-icon-wrap">
             <input
               id="profile-upi"
               type="text"
@@ -102,16 +84,7 @@ export default function ProfileModal({ isOpen, onClose }) {
               onChange={(e) => setUpiId(e.target.value)}
               placeholder="e.g. yourname@okaxis or 9876543210@paytm"
             />
-            <CreditCard
-              size={17}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--text-dim)',
-              }}
-            />
+            <CreditCard size={17} />
           </div>
           <div className="form-hint">
             Adding your UPI ID generates 1-click payment links when roommates settle debts with you.

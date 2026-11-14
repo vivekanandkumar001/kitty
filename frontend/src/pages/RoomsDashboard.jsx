@@ -4,14 +4,15 @@ import { useToast } from '../context/ToastContext';
 import Modal from '../components/Modal';
 import {
   Plus,
-  Users,
   Copy,
   Check,
   Building,
   ArrowRight,
   LogIn,
-  Layers,
-  Sparkles,
+  LayoutGrid,
+  CalendarClock,
+  ShieldCheck,
+  DoorOpen,
 } from 'lucide-react';
 
 export default function RoomsDashboard({ onSelectRoom }) {
@@ -43,6 +44,7 @@ export default function RoomsDashboard({ onSelectRoom }) {
 
   useEffect(() => {
     fetchRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreateRoom = async (e) => {
@@ -99,114 +101,104 @@ export default function RoomsDashboard({ onSelectRoom }) {
     setTimeout(() => setCopiedCode(null), 2500);
   };
 
+  const now = new Date();
+  const createdThisMonth = rooms.filter((r) => {
+    const d = new Date(r.created_at);
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).length;
+
   return (
-    <div>
-      {/* Top action bar */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          marginBottom: '28px',
-        }}
-      >
+    <div className="animate-in">
+      {/* ── Page header ─────────────────────────────────────────── */}
+      <div className="page-header">
         <div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-            Your Rooms
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0 }}>
-            Manage shared apartments, hostel flats, and project groups.
+          <div className="eyebrow"><span className="dot" /> Workspace / Rooms</div>
+          <h1 className="page-title">Your shared-living ledgers</h1>
+          <p className="page-subtitle">
+            Every flat, PG wing and project group — expenses, splits, settlements and move-out
+            math in one audit-grade place.
           </p>
         </div>
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => setShowJoinModal(true)}
-          >
-            <LogIn size={16} /> Join with Code
+        <div className="page-actions">
+          <button type="button" className="btn btn-secondary" onClick={() => setShowJoinModal(true)}>
+            <LogIn size={16} /> Join with code
           </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={16} /> Create Room
+          <button type="button" className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+            <Plus size={16} /> Create room
           </button>
         </div>
       </div>
 
-      {/* Room list or empty state */}
+      {/* ── KPI strip ───────────────────────────────────────────── */}
+      <div className="stats-grid" style={{ marginBottom: '26px' }}>
+        <div className="stat-card">
+          <div className="stat-card-top">
+            <span className="stat-label">Active rooms</span>
+            <span className="icon-chip emerald"><LayoutGrid size={16} /></span>
+          </div>
+          <div className="stat-value">{loading ? '—' : rooms.length}</div>
+          <div className="stat-sub">Flats, PGs &amp; groups you belong to</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-card-top">
+            <span className="stat-label">Created this month</span>
+            <span className="icon-chip indigo"><CalendarClock size={16} /></span>
+          </div>
+          <div className="stat-value">{loading ? '—' : createdThisMonth}</div>
+          <div className="stat-sub">New ledgers spun up in {now.toLocaleDateString(undefined, { month: 'long' })}</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-card-top">
+            <span className="stat-label">Settlement engine</span>
+            <span className="icon-chip amber"><ShieldCheck size={16} /></span>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ width: '9px', height: '9px', borderRadius: '9999px', background: 'var(--emerald)', boxShadow: '0 0 10px var(--emerald-glow)', display: 'inline-block' }} />
+            Operational
+          </div>
+          <div className="stat-sub">Deterministic debt simplification · paise-exact</div>
+        </div>
+      </div>
+
+      {/* ── Room grid ───────────────────────────────────────────── */}
       {loading ? (
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '18px',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '16px',
           }}
         >
           {[1, 2, 3].map((i) => (
-            <div key={i} className="card" style={{ height: '170px', opacity: 0.5 }}>
-              <div style={{ height: '24px', width: '50%', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', marginBottom: '14px' }}></div>
-              <div style={{ height: '16px', width: '80%', background: 'rgba(255,255,255,0.05)', borderRadius: '6px' }}></div>
-            </div>
+            <div key={i} className="skeleton" style={{ height: '168px' }} />
           ))}
         </div>
       ) : rooms.length === 0 ? (
-        <div
-          className="card"
-          style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            maxWidth: '520px',
-            margin: '40px auto',
-          }}
-        >
-          <div
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--emerald-subtle)',
-              color: 'var(--emerald-ink)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 18px',
-            }}
-          >
-            <Building size={28} />
-          </div>
-          <h3 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>No rooms yet</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '24px' }}>
-            Create a room for your flatmates or join an existing room with an invite code.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setShowCreateModal(true)}
-            >
-              <Plus size={16} /> Create New Room
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setShowJoinModal(true)}
-            >
-              <LogIn size={16} /> Join by Code
-            </button>
+        <div className="section-card">
+          <div className="empty-state" style={{ padding: '64px 24px' }}>
+            <div className="empty-icon">
+              <DoorOpen size={26} strokeWidth={1.8} />
+            </div>
+            <h4>No rooms yet — let&apos;s fix that</h4>
+            <p>Create a room for your flat or join an existing one with a 6-character invite code from a roommate.</p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button type="button" className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+                <Plus size={16} /> Create your first room
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowJoinModal(true)}>
+                <LogIn size={16} /> Join by code
+              </button>
+            </div>
           </div>
         </div>
       ) : (
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: '18px',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))',
+            gap: '16px',
           }}
         >
           {rooms.map((room) => (
@@ -214,92 +206,88 @@ export default function RoomsDashboard({ onSelectRoom }) {
               key={room.code}
               className="card card-clickable"
               onClick={() => onSelectRoom(room.code)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onSelectRoom(room.code)}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
+                padding: '20px',
+                gap: '18px',
               }}
             >
               <div>
-                <div className="card-header-flex">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                     <div
                       style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: 'var(--radius-sm)',
-                        background: 'linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(99,102,241,0.15) 100%)',
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '12px',
+                        flexShrink: 0,
+                        background: 'linear-gradient(135deg, rgba(16,185,129,0.22) 0%, rgba(99,102,241,0.22) 100%)',
+                        border: '1px solid var(--border-card)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: 'var(--emerald-ink)',
                       }}
                     >
-                      <Building size={20} />
+                      <Building size={21} strokeWidth={1.9} />
                     </div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <h3 style={{ margin: 0, fontSize: '1.04rem', fontWeight: 700, letterSpacing: '-0.015em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {room.name}
-                      </h4>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                        Created {new Date(room.created_at).toLocaleDateString()}
+                      </h3>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
+                        opened {new Date(room.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
                     </div>
                   </div>
-
-                  {/* Room Code Badge */}
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm mono"
-                    style={{
-                      fontSize: '0.78rem',
-                      letterSpacing: '0.04em',
-                      padding: '4px 8px',
-                    }}
-                    onClick={(e) => copyCode(room.code, e)}
-                    title="Click to copy room code"
-                  >
-                    {copiedCode === room.code ? (
-                      <>
-                        <Check size={12} color="var(--emerald)" /> Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={12} /> {room.code}
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
 
+              {/* Footer row: invite code + open */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  paddingTop: '16px',
-                  marginTop: '16px',
+                  gap: '10px',
+                  paddingTop: '14px',
                   borderTop: '1px solid var(--border-subtle)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  <Users size={15} />
-                  <span>Open Room Dashboard</span>
-                </div>
-                <div style={{ color: 'var(--emerald-ink)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', fontWeight: 600 }}>
-                  Enter <ArrowRight size={15} />
-                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm mono"
+                  style={{ fontSize: '0.76rem', letterSpacing: '0.06em' }}
+                  onClick={(e) => copyCode(room.code, e)}
+                  title="Click to copy invite code"
+                >
+                  {copiedCode === room.code ? (
+                    <><Check size={12} color="var(--emerald-ink)" /> Copied</>
+                  ) : (
+                    <><Copy size={12} /> {room.code}</>
+                  )}
+                </button>
+
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', fontWeight: 600, color: 'var(--emerald-ink)' }}>
+                  Open dashboard <ArrowRight size={14} />
+                </span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal: Create Room */}
+      {/* ── Modal: Create Room ──────────────────────────────────── */}
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title="Create New Room"
+        title="Create new room"
+        subtitle="A room is a shared ledger for one flat or group."
       >
         <form onSubmit={handleCreateRoom}>
           <div className="form-group">
@@ -308,45 +296,38 @@ export default function RoomsDashboard({ onSelectRoom }) {
               id="create-room-name"
               type="text"
               className="form-control"
-              placeholder="e.g. Flat 302, Green Glen"
+              placeholder="e.g. Flat 302, Green Glen Layout"
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               autoFocus
               required
             />
             <div className="form-hint">
-              Give your flat or group a recognizable name. You'll receive a 6-character code to invite others.
+              You&apos;ll receive a 6-character invite code to onboard flatmates instantly.
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setShowCreateModal(false)}
-            >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '22px' }}>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={actionLoading}
-            >
-              {actionLoading ? 'Creating...' : 'Create Room'}
+            <button type="submit" className="btn btn-primary" disabled={actionLoading}>
+              {actionLoading ? 'Creating…' : 'Create room'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Modal: Join Room */}
+      {/* ── Modal: Join Room ────────────────────────────────────── */}
       <Modal
         isOpen={showJoinModal}
         onClose={() => setShowJoinModal(false)}
-        title="Join Room with Code"
+        title="Join with invite code"
+        subtitle="6 characters, case-insensitive."
       >
         <form onSubmit={handleJoinRoom}>
           <div className="form-group">
-            <label htmlFor="join-room-code">6-Character Room Code</label>
+            <label htmlFor="join-room-code">Room Code</label>
             <input
               id="join-room-code"
               type="text"
@@ -357,27 +338,17 @@ export default function RoomsDashboard({ onSelectRoom }) {
               maxLength={6}
               autoFocus
               required
-              style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.1rem' }}
+              style={{ textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '1.15rem', textAlign: 'center' }}
             />
-            <div className="form-hint">
-              Ask your roommate for the room invite code to join immediately.
-            </div>
+            <div className="form-hint">Ask any active member of the room for the invite code.</div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setShowJoinModal(false)}
-            >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '22px' }}>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowJoinModal(false)}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={actionLoading}
-            >
-              {actionLoading ? 'Joining...' : 'Join Room'}
+            <button type="submit" className="btn btn-primary" disabled={actionLoading}>
+              {actionLoading ? 'Joining…' : 'Join room'}
             </button>
           </div>
         </form>

@@ -212,8 +212,8 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
             maxWidth: '440px',
             padding: '36px 30px',
             textAlign: 'center',
-            border: '1px solid var(--border-glow)',
-            boxShadow: '0 20px 45px rgba(0, 0, 0, 0.45)',
+            border: '1px solid var(--border-card)',
+            boxShadow: 'var(--shadow-lg)',
           }}
         >
           <div
@@ -544,13 +544,12 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
                             {formatMoney(cat.amount_minor)} <span style={{ color: 'var(--text-muted)' }}>({pct}%)</span>
                           </span>
                         </div>
-                        <div style={{ height: '7px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                        <div className="progress-track">
                           <div
+                            className="progress-fill"
                             style={{
-                              height: '100%',
                               width: `${Math.min(100, Math.max(2, pct))}%`,
                               background: 'linear-gradient(90deg, var(--indigo) 0%, var(--emerald) 100%)',
-                              borderRadius: '4px',
                             }}
                           />
                         </div>
@@ -676,16 +675,16 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
               No users matching your search query.
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <div className="table-responsive">
+              <table className="data-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
-                    <th style={{ padding: '10px 12px' }}>User</th>
-                    <th style={{ padding: '10px 12px' }}>Mobile Phone</th>
-                    <th style={{ padding: '10px 12px' }}>UPI ID</th>
-                    <th style={{ padding: '10px 12px' }}>Active Rooms</th>
-                    <th style={{ padding: '10px 12px' }}>Joined Date</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
+                  <tr>
+                    <th>User</th>
+                    <th>Mobile Phone</th>
+                    <th>UPI ID</th>
+                    <th>Active Rooms</th>
+                    <th>Joined Date</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -811,17 +810,17 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
               No rooms matching your search query.
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <div className="table-responsive">
+              <table className="data-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
-                    <th style={{ padding: '10px 12px' }}>Code</th>
-                    <th style={{ padding: '10px 12px' }}>Room Name</th>
-                    <th style={{ padding: '10px 12px' }}>Created By (Owner)</th>
-                    <th style={{ padding: '10px 12px' }}>Active Members</th>
-                    <th style={{ padding: '10px 12px' }}>Total Spent</th>
-                    <th style={{ padding: '10px 12px' }}>Created Date</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
+                  <tr>
+                    <th>Code</th>
+                    <th>Room Name</th>
+                    <th>Created By (Owner)</th>
+                    <th>Active Members</th>
+                    <th>Total Spent</th>
+                    <th>Created Date</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>

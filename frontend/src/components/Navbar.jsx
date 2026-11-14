@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useTheme } from '../theme';
 import {
   Split,
   Bell,
@@ -10,13 +11,17 @@ import {
   ChevronDown,
   Building,
   CreditCard,
-  ExternalLink,
   Shield,
+  Sun,
+  Moon,
+  CheckCheck,
+  Inbox,
 } from 'lucide-react';
 
-export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onOpenProfile, onOpenAdmin }) {
+export default function Navbar({ onSelectRoom, onNavigateRooms, onOpenProfile, onOpenAdmin, currentRoom }) {
   const { user, logout, notifications, markNotificationRead, markAllNotificationsRead } = useAuth();
   const { showToast } = useToast();
+  const { theme, toggleTheme } = useTheme();
   const [showNotifs, setShowNotifs] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const notifRef = useRef(null);
@@ -25,31 +30,36 @@ export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onO
   // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(e) {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setShowNotifs(false);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
-        setShowUserMenu(false);
-      }
+      if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifs(false);
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setShowUserMenu(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close on Escape for polish
+  useEffect(() => {
+    function handleKey(e) {
+      if (e.key === 'Escape') {
+        setShowNotifs(false);
+        setShowUserMenu(false);
+      }
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, []);
 
   const handleLogout = async () => {
     try {
       await logout();
       showToast('Logged out successfully', 'info');
-    } catch (err) {
+    } catch {
       showToast('Error logging out', 'error');
     }
   };
 
   const handleNotifClick = (notif) => {
-    if (!notif.read_at) {
-      markNotificationRead(notif.id);
-    }
-    // If notification has link e.g. /room/CODE
+    if (!notif.read_at) markNotificationRead(notif.id);
     if (notif.link && notif.link.startsWith('/room/')) {
       const code = notif.link.split('/')[2];
       if (code) {
@@ -62,81 +72,110 @@ export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onO
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {/* Brand + breadcrumb */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', minWidth: 0 }}>
           <button
             type="button"
             className="nav-brand"
             onClick={onNavigateRooms}
-            style={{ cursor: 'pointer', textAlign: 'left' }}
+            style={{ textAlign: 'left' }}
+            aria-label="Kitty home"
           >
             <div className="brand-icon-wrap">
-              <Split size={20} />
+              <Split size={20} strokeWidth={2.4} />
             </div>
             <span>Kitty</span>
-            <span className="brand-badge">SPA</span>
+            <span className="brand-badge">Enterprise</span>
           </button>
 
           {currentRoom && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ color: 'var(--text-dim)' }}>/</span>
+            <div className="nav-crumb">
+              <span className="nav-crumb-sep">/</span>
               <button
                 type="button"
                 className="btn btn-subtle btn-sm"
                 onClick={onNavigateRooms}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '7px' }}
               >
-                <Building size={15} />
-                <span>{currentRoom.name}</span>
-                <span className="badge badge-misc mono" style={{ fontSize: '0.7rem' }}>
-                  {currentRoom.code}
+                <Building size={14} />
+                <span style={{ maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {currentRoom.name}
                 </span>
               </button>
+              <span className="chip">{currentRoom.code}</span>
             </div>
           )}
         </div>
 
-        {/* Right side navigation & controls */}
+        {/* Right cluster */}
         {user && (
           <div className="nav-right">
-            {/* Notification Bell */}
-            <div className="notif-menu-wrap" ref={notifRef}>
+            {/* Theme toggle */}
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              <span className="toggle-icon">
+                <Sun size={15} />
+              </span>
+              <span className="toggle-icon">
+                <Moon size={15} />
+              </span>
+              <span className="toggle-thumb">
+                {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
+              </span>
+            </button>
+
+            <div className="nav-divider" />
+
+            {/* Notifications */}
+            <div className="menu-wrap" ref={notifRef}>
               <button
                 type="button"
-                className="bell-btn"
-                onClick={() => setShowNotifs(!showNotifs)}
+                className="icon-btn"
+                onClick={() => setShowNotifs((v) => !v)}
                 aria-label="Notifications"
+                aria-expanded={showNotifs}
               >
-                <Bell size={18} />
-                {notifications.unread > 0 && (
-                  <span className="unread-badge">{notifications.unread}</span>
-                )}
+                <Bell size={17} />
+                {notifications.unread > 0 && <span className="unread-badge">{notifications.unread}</span>}
               </button>
 
               {showNotifs && (
-                <div className="notif-panel">
+                <div className="notif-panel" role="dialog" aria-label="Notifications">
                   <div className="notif-header">
-                    <h4>Notifications</h4>
+                    <h4>
+                      Notifications
+                      {notifications.unread > 0 && <span className="notif-count">{notifications.unread} new</span>}
+                    </h4>
                     {notifications.unread > 0 && (
                       <button
                         type="button"
-                        className="btn btn-subtle btn-sm"
-                        style={{ fontSize: '0.75rem', padding: '3px 8px' }}
+                        className="btn btn-subtle btn-xs"
                         onClick={markAllNotificationsRead}
                       >
-                        <Check size={13} /> Mark all read
+                        <CheckCheck size={13} /> Mark all read
                       </button>
                     )}
                   </div>
                   <div className="notif-list">
                     {notifications.items.length === 0 ? (
-                      <div className="notif-empty">No notifications yet</div>
+                      <div className="notif-empty">
+                        <Inbox size={26} strokeWidth={1.5} />
+                        <span>All quiet here. Room events will appear in this feed.</span>
+                      </div>
                     ) : (
                       notifications.items.map((n) => (
                         <div
                           key={n.id}
                           className={`notif-item ${!n.read_at ? 'unread' : ''}`}
                           onClick={() => handleNotifClick(n)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => e.key === 'Enter' && handleNotifClick(n)}
                         >
                           <div className="notif-item-title">{n.title}</div>
                           {n.body && <div className="notif-item-body">{n.body}</div>}
@@ -156,39 +195,38 @@ export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onO
               )}
             </div>
 
-            {/* User Profile Menu */}
-            <div className="notif-menu-wrap" ref={userMenuRef}>
+            {/* User menu */}
+            <div className="menu-wrap" ref={userMenuRef}>
               <button
                 type="button"
                 className="user-menu-btn"
-                onClick={() => setShowUserMenu(!showUserMenu)}
+                onClick={() => setShowUserMenu((v) => !v)}
+                aria-expanded={showUserMenu}
+                aria-haspopup="menu"
               >
                 <div className="user-avatar-badge">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
-                <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>{user.name}</span>
-                <ChevronDown size={14} style={{ color: 'var(--text-dim)' }} />
+                <span className="user-menu-name" style={{ fontSize: '0.87rem', fontWeight: 600, maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.name}
+                </span>
+                <ChevronDown size={14} style={{ color: 'var(--text-dim)', transition: 'transform 0.2s', transform: showUserMenu ? 'rotate(180deg)' : 'none' }} />
               </button>
 
               {showUserMenu && (
-                <div
-                  className="notif-panel"
-                  style={{ width: '220px', padding: '6px' }}
-                >
-                  <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--border-subtle)' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{user.name}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      +91 {user.phone}
-                    </div>
+                <div className="notif-panel" style={{ width: '260px', padding: '6px' }} role="menu">
+                  <div className="menu-heading">
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', letterSpacing: '-0.01em' }}>{user.name}</div>
+                    <div style={{ fontSize: '0.77rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>+91 {user.phone}</div>
                     {user.upi_id && (
                       <div
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.74rem',
                           color: 'var(--emerald-ink)',
-                          marginTop: '4px',
+                          marginTop: '5px',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px',
+                          gap: '5px',
                         }}
                       >
                         <CreditCard size={12} /> {user.upi_id}
@@ -198,54 +236,30 @@ export default function Navbar({ currentRoom, onSelectRoom, onNavigateRooms, onO
 
                   <button
                     type="button"
-                    className="btn btn-subtle btn-sm"
-                    style={{
-                      width: '100%',
-                      justifyContent: 'flex-start',
-                      padding: '9px 12px',
-                      borderRadius: 'var(--radius-xs)',
-                    }}
+                    className="menu-item"
                     onClick={() => {
                       setShowUserMenu(false);
                       onOpenProfile();
                     }}
                   >
-                    <User size={15} /> Edit Profile / UPI
+                    <User size={15} /> Edit profile &amp; UPI
                   </button>
 
                   {onOpenAdmin && (
                     <button
                       type="button"
-                      className="btn btn-subtle btn-sm"
-                      style={{
-                        width: '100%',
-                        justifyContent: 'flex-start',
-                        padding: '9px 12px',
-                        borderRadius: 'var(--radius-xs)',
-                        color: 'var(--indigo-ink)',
-                      }}
+                      className="menu-item accent"
                       onClick={() => {
                         setShowUserMenu(false);
                         onOpenAdmin();
                       }}
                     >
-                      <Shield size={15} /> Superadmin Portal
+                      <Shield size={15} /> Superadmin console
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    className="btn btn-subtle btn-sm"
-                    style={{
-                      width: '100%',
-                      justifyContent: 'flex-start',
-                      padding: '9px 12px',
-                      borderRadius: 'var(--radius-xs)',
-                      color: 'var(--coral-ink)',
-                    }}
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={15} /> Log Out
+                  <button type="button" className="menu-item danger" onClick={handleLogout}>
+                    <LogOut size={15} /> Log out
                   </button>
                 </div>
               )}

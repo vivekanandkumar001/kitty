@@ -521,14 +521,7 @@ export default function RoomView({ roomCode, onBack }) {
   return (
     <div>
       {/* Room Header Banner */}
-      <div
-        className="card"
-        style={{
-          background: 'linear-gradient(135deg, rgba(22,32,50,0.9) 0%, rgba(17,24,39,0.95) 100%)',
-          marginBottom: '24px',
-          padding: '24px 28px',
-        }}
-      >
+      <div className="hero-banner" style={{ marginBottom: '22px' }}>
         <div
           style={{
             display: 'flex',
@@ -538,35 +531,51 @@ export default function RoomView({ roomCode, onBack }) {
             gap: '18px',
           }}
         >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
+          <div style={{ minWidth: 0 }}>
+            <div className="eyebrow" style={{ marginBottom: '10px' }}>
+              <span className="dot" /> Room / {roomCode}
+              {onBack && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  style={{
+                    marginLeft: '6px',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.13em',
+                    textTransform: 'uppercase',
+                    color: 'var(--emerald-ink)',
+                    fontWeight: 700,
+                    padding: '2px 0',
+                    borderBottom: '1px solid transparent',
+                  }}
+                >
+                  ← All rooms
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <h1 className="page-title" style={{ fontSize: 'clamp(1.4rem, 3.4vw, 1.85rem)' }}>
                 {room?.name}
-              </h2>
-              {/* Room Code Badge */}
+              </h1>
               <button
                 type="button"
-                className="btn btn-secondary btn-sm mono"
+                className="chip"
                 onClick={copyRoomCode}
-                title="Copy Room Code to share with flatmates"
-                style={{
-                  background: 'var(--bg-card)',
-                  borderColor: 'var(--border-card)',
-                  fontSize: '0.85rem',
-                  padding: '5px 10px',
-                }}
+                title="Copy invite code to share with flatmates"
+                style={{ cursor: 'pointer' }}
               >
-                {copiedCode ? <Check size={14} color="var(--emerald)" /> : <Copy size={14} />}
-                <span>{roomCode}</span>
+                {copiedCode ? <Check size={12} color="var(--emerald-ink)" /> : <Copy size={12} />}
+                {roomCode}
               </button>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: 'var(--text-muted)', fontSize: '0.86rem' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Users size={15} /> {activeMembers.length} active flatmates
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', color: 'var(--text-muted)', fontSize: '0.85rem', flexWrap: 'wrap' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Users size={14} /> {activeMembers.length} active flatmate{activeMembers.length === 1 ? '' : 's'}
               </span>
-              <span>•</span>
-              <span>Month Spend: <strong className="mono" style={{ color: 'var(--text-main)' }}>{formatMoney(dashboard?.month_total_minor)}</strong></span>
+              <span aria-hidden="true" style={{ color: 'var(--text-dim)' }}>•</span>
+              <span>Month spend: <strong className="mono" style={{ color: 'var(--text-main)' }}>{formatMoney(dashboard?.month_total_minor)}</strong></span>
             </div>
           </div>
 
@@ -577,7 +586,7 @@ export default function RoomView({ roomCode, onBack }) {
               className="btn btn-primary"
               onClick={() => setShowAddExpense(true)}
             >
-              <Plus size={16} /> Add Expense
+              <Plus size={16} strokeWidth={2.5} /> Add Expense
             </button>
             <button
               type="button"
@@ -636,111 +645,68 @@ export default function RoomView({ roomCode, onBack }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
           {/* Net Balance Status Banner */}
           <div
-            className="card"
-            style={{
-              background:
-                myBalance > 0
-                  ? 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(22,32,50,0.6) 100%)'
-                  : myBalance < 0
-                  ? 'linear-gradient(135deg, rgba(244,63,94,0.12) 0%, rgba(22,32,50,0.6) 100%)'
-                  : 'var(--bg-card)',
-              borderColor:
-                myBalance > 0
-                  ? 'rgba(16,185,129,0.3)'
-                  : myBalance < 0
-                  ? 'rgba(244,63,94,0.3)'
-                  : 'var(--border-card)',
-              padding: '24px',
-            }}
+            className={`balance-hero ${myBalance > 0 ? 'positive' : myBalance < 0 ? 'negative' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
-              <div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                  Your Room Balance
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
-                  <h3
-                    className="mono"
-                    style={{
-                      fontSize: '2.2rem',
-                      fontWeight: 800,
-                      margin: 0,
-                      color:
-                        myBalance > 0
-                          ? 'var(--emerald-ink)'
-                          : myBalance < 0
-                          ? 'var(--coral-ink)'
-                          : 'var(--text-main)',
-                    }}
-                  >
-                    {myBalance > 0
-                      ? `+${formatMoney(myBalance)}`
-                      : myBalance < 0
-                      ? `-${formatMoney(Math.abs(myBalance))}`
-                      : '₹0.00'}
-                  </h3>
-                  {myBalance > 0 && <span className="badge badge-positive">You get back</span>}
-                  {myBalance < 0 && <span className="badge badge-negative">You owe</span>}
-                  {myBalance === 0 && <span className="badge badge-misc">All settled up</span>}
-                </div>
-              </div>
-
-              {myBalance !== 0 && (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setShowSettleModal(true)}
+            <div>
+              <span className="balance-label">Your Room Balance</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px', flexWrap: 'wrap' }}>
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 'clamp(1.6rem, 4vw, 2.2rem)',
+                    fontWeight: 800,
+                    letterSpacing: '-0.03em',
+                    color:
+                      myBalance > 0
+                        ? 'var(--emerald-ink)'
+                        : myBalance < 0
+                        ? 'var(--coral-ink)'
+                        : 'var(--text-main)',
+                  }}
                 >
-                  <Scale size={16} /> Settle Up Now
-                </button>
-              )}
+                  {myBalance > 0
+                    ? `+${formatMoney(myBalance)}`
+                    : myBalance < 0
+                    ? `-${formatMoney(Math.abs(myBalance))}`
+                    : '₹0.00'}
+                </span>
+                {myBalance > 0 && <span className="badge badge-positive">You get back</span>}
+                {myBalance < 0 && <span className="badge badge-negative">You owe</span>}
+                {myBalance === 0 && <span className="badge badge-misc">All settled up</span>}
+              </div>
             </div>
+
+            {myBalance !== 0 && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setShowSettleModal(true)}
+              >
+                <Scale size={16} /> Settle up now
+              </button>
+            )}
           </div>
 
           {/* Pending Recurring Bills Alert (if any) */}
           {dashboard?.pending_recurring && dashboard.pending_recurring.length > 0 && (
-            <div
-              className="card"
-              style={{
-                background: 'rgba(245, 158, 11, 0.08)',
-                borderColor: 'rgba(245, 158, 11, 0.3)',
-                padding: '18px 22px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: 'var(--radius-sm)',
-                      background: 'rgba(245, 158, 11, 0.15)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'var(--amber-ink)',
-                    }}
-                  >
-                    <Repeat size={18} />
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>
-                      {dashboard.pending_recurring.length} Recurring Bill(s) Due This Month
-                    </strong>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      {dashboard.pending_recurring.map((r) => r.name).join(', ')}
-                    </div>
-                  </div>
+            <div className="alert-warn">
+              <span className="icon-chip amber"><Repeat size={17} /></span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <strong style={{ fontSize: '0.92rem', color: 'var(--text-main)' }}>
+                  {dashboard.pending_recurring.length} recurring bill{dashboard.pending_recurring.length > 1 ? 's' : ''} due this month
+                </strong>
+                <div style={{ fontSize: '0.81rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  {dashboard.pending_recurring.map((r) => r.name).join(' · ')}
                 </div>
-
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setActiveTab('recurring')}
-                >
-                  View & Generate <ArrowRight size={14} />
-                </button>
               </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setActiveTab('recurring')}
+              >
+                View &amp; generate <ArrowRight size={14} />
+              </button>
             </div>
           )}
 
@@ -772,14 +738,10 @@ export default function RoomView({ roomCode, onBack }) {
                             {formatMoney(cat.amount_minor)} ({pct}%)
                           </span>
                         </div>
-                        <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div className="progress-track">
                           <div
-                            style={{
-                              height: '100%',
-                              width: `${pct}%`,
-                              background: 'var(--emerald)',
-                              borderRadius: '3px',
-                            }}
+                            className="progress-fill"
+                            style={{ width: `${pct}%` }}
                           ></div>
                         </div>
                       </div>
