@@ -46,6 +46,22 @@ export function AuthProvider({ children }) {
     return () => clearInterval(interval);
   }, [user, fetchNotifications]);
 
+  const requestOtp = useCallback(async (phone, purpose) => {
+    return apiRequest('/api/auth/otp/request', {
+      method: 'POST',
+      body: { phone, purpose },
+    });
+  }, []);
+
+  const verifyOtp = useCallback(async (phone, purpose, code, name) => {
+    const data = await apiRequest('/api/auth/otp/verify', {
+      method: 'POST',
+      body: { phone, purpose, code, name },
+    });
+    setUser(data);
+    return data;
+  }, []);
+
   const login = async (phone, pin) => {
     const data = await apiRequest('/api/auth/login', {
       method: 'POST',
@@ -115,6 +131,8 @@ export function AuthProvider({ children }) {
         loading,
         login,
         signup,
+        requestOtp,
+        verifyOtp,
         logout,
         updateProfile,
         notifications,

@@ -27,14 +27,8 @@ env/
 htmlcov/
 *.egg-info/
 
-# Tests & test folders (never push to git)
-tests/
-test/
-__tests__/
-*.test.*
-*.spec.*
-dist/
-build/
+# Tests belong in git. (Blanket ignore rules here silently dropped the entire
+# test suite from the repo — the README claimed 107 tests that were never pushed.)
 
 # Platform-managed agentplat state, not project source. In the
 # client-initiated single-repo workspace layout (make's `Path: "."` spec) the

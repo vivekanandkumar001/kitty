@@ -22,7 +22,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from models import (db, User, Room, RoomMembership, Expense, ExpenseSplit,
-                     RecurringExpense, Settlement, Notification,
+                     RecurringExpense, Settlement, Notification, OtpCode,
                      CATEGORIES, SPLIT_TYPES, gen_code)
 from engine import compute_split, compute_balances, simplify_debts, SplitError
 
@@ -46,14 +46,18 @@ else:
 CORS(app, supports_credentials=True, origins=_allowed_origins)
 
 # ─── Database: PostgreSQL ────────────────────────────────────────────────────
-db_uri = (os.environ.get("DATABASE_URL")
-          or os.environ.get("postgresql_uri")
-          or os.environ.get("SQLALCHEMY_DATABASE_URI"))
-
-if not db_uri:
-    if os.environ.get("TESTING") == "true":
-        db_uri = "sqlite:///:memory:"
-    else:
+# Tests run against a throwaway temp-file SQLite — never against DATABASE_URL,
+# so a careless `pytest` can never touch the production Neon instance.
+# (A file, not :memory:, because the threaded dev server + pool_recycle would
+# otherwise drop the in-memory schema mid-run.)
+if os.environ.get("TESTING") == "true":
+    import tempfile
+    db_uri = "sqlite:///" + os.path.join(tempfile.gettempdir(), "kitty_test.db")
+else:
+    db_uri = (os.environ.get("DATABASE_URL")
+              or os.environ.get("postgresql_uri")
+              or os.environ.get("SQLALCHEMY_DATABASE_URI"))
+    if not db_uri:
         raise RuntimeError(
             "PostgreSQL connection URI is required. Please set 'DATABASE_URL' or 'postgresql_uri' in backend/.env"
         )
@@ -104,6 +108,8 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["5000 per day", "1000 per hour"],
     storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
+    # Tests fire many requests from one IP — never limit them
+    enabled=os.environ.get("TESTING") != "true",
 )
 
 db.init_app(app)
@@ -462,6 +468,216 @@ def login():
 def logout():
     session.clear()
     return jsonify({"ok": True})
+
+
+# ─── OTP: phone one-time-password auth ───────────────────────────────────────
+# Two endpoints back the entire sign-in / sign-up experience:
+#   POST /api/auth/otp/request  → issues a 6-digit code (SMS)
+#   POST /api/auth/otp/verify   → verifies it, signs the user in / creates account
+#
+# Delivery providers, in order: MSG91 → Twilio → demo mode.
+# Demo mode is ON only when OTP_DEMO_MODE=true (or tests run) — it logs the
+# code server-side and returns `dev_otp` so the flow works without an SMS
+# account. It is a deliberate demo affordance: never enable it in a
+# production deployment with real users unless you accept that trade-off.
+from werkzeug.security import generate_password_hash as _gph, check_password_hash as _cph
+import urllib.request as _urlreq
+import urllib.parse as _urlparse
+import base64 as _b64
+from datetime import timedelta as _timedelta
+
+OTP_TTL_SECONDS = int(os.environ.get("OTP_TTL_SECONDS", "300"))
+OTP_RESEND_COOLDOWN = int(os.environ.get("OTP_RESEND_COOLDOWN_SECONDS", "30"))
+OTP_MAX_ATTEMPTS = 5
+OTP_MAX_REQUESTS_PER_HOUR = 5
+OTP_LENGTH = 6
+
+
+def _otp_demo_mode():
+    return (os.environ.get("OTP_DEMO_MODE", "").lower() in ("1", "true", "yes")
+            or os.environ.get("TESTING") == "true")
+
+
+def _norm_phone(raw):
+    return re.sub(r"\D", "", (raw or ""))
+
+
+def _send_sms_msg91(phone, code):
+    auth = os.environ.get("MSG91_AUTH_KEY")
+    if not auth:
+        return False, "MSG91 not configured"
+    sender = os.environ.get("MSG91_SENDER_ID", "KITTY1")
+    message = f"Your Kitty OTP is {code}. It is valid for 5 minutes. Do not share it with anyone."
+    mobiles = ("+91" + phone) if len(phone) == 10 else phone
+    url = ("https://control.msg91.com/api/v2/sendsms?"
+           + _urlparse.urlencode({"authkey": auth, "mobiles": mobiles,
+                                  "message": message, "sender": sender, "route": "4"}))
+    try:
+        with _urlreq.urlopen(url, timeout=8) as resp:
+            body = resp.read().decode("utf-8", "ignore")
+            return (resp.status == 200), body[:200]
+    except Exception as exc:
+        return False, str(exc)[:200]
+
+
+def _send_sms_twilio(phone, code):
+    sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    token = os.environ.get("TWILIO_AUTH_TOKEN")
+    frm = os.environ.get("TWILIO_FROM")
+    if not (sid and token and frm):
+        return False, "Twilio not configured"
+    to = ("+91" + phone) if len(phone) == 10 else ("+" + phone)
+    data = _urlparse.urlencode({
+        "From": frm, "To": to,
+        "Body": f"Your Kitty OTP is {code}. It is valid for 5 minutes. Never share it.",
+    }).encode()
+    req = _urlreq.Request(
+        f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json",
+        data=data, method="POST")
+    req.add_header("Authorization", "Basic " + _b64.b64encode(f"{sid}:{token}".encode()).decode())
+    try:
+        with _urlreq.urlopen(req, timeout=8) as resp:
+            return resp.status in (200, 201), resp.read().decode("utf-8", "ignore")[:200]
+    except Exception as exc:
+        return False, str(exc)[:200]
+
+
+def _deliver_otp(phone, code):
+    """Send the code. Returns (delivered, channel, detail)."""
+    if os.environ.get("MSG91_AUTH_KEY"):
+        ok, detail = _send_sms_msg91(phone, code)
+        return ok, "msg91", detail
+    if os.environ.get("TWILIO_ACCOUNT_SID"):
+        ok, detail = _send_sms_twilio(phone, code)
+        return ok, "twilio", detail
+    if _otp_demo_mode():
+        app.logger.warning("[OTP-DEMO] %s -> %s", phone, code)
+        print(f"[OTP-DEMO] {phone} -> {code}", flush=True)
+        return True, "demo", "demo mode (code logged server-side)"
+    return False, "unconfigured", ("SMS provider not configured. Set MSG91_AUTH_KEY + "
+                                   "MSG91_SENDER_ID (and optionally MSG91_ROUTE), or "
+                                   "TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM "
+                                   "— or OTP_DEMO_MODE=true for demos.")
+
+
+@app.route("/api/auth/otp/request", methods=["POST"])
+@limiter.limit("10 per minute")
+def otp_request():
+    data = request.get_json(force=True) or {}
+    purpose = (data.get("purpose") or "login").strip().lower()
+    phone = _norm_phone(data.get("phone"))
+
+    if purpose not in ("login", "signup"):
+        return jsonify({"error": "purpose must be 'login' or 'signup'."}), 400
+    if not PHONE_RE.match(phone):
+        return jsonify({"error": "Enter a valid mobile number (10–15 digits)."}), 400
+
+    existing = User.query.filter_by(phone=phone).first()
+    if purpose == "login" and not existing:
+        return jsonify({"error": "No Kitty account for this number yet. Choose “New Account”."}), 404
+    if purpose == "signup" and existing:
+        return jsonify({"error": "This number is already registered. Sign in instead."}), 409
+
+    now = datetime.utcnow()
+    hour_ago = now - _timedelta(hours=1)
+    recent = OtpCode.query.filter(OtpCode.phone == phone,
+                                  OtpCode.created_at >= hour_ago).count()
+    if recent >= OTP_MAX_REQUESTS_PER_HOUR:
+        return jsonify({"error": "Too many OTP requests. Please try again in an hour."}), 429
+
+    last = (OtpCode.query.filter_by(phone=phone, purpose=purpose)
+            .order_by(OtpCode.created_at.desc()).first())
+    if last and (now - last.created_at).total_seconds() < OTP_RESEND_COOLDOWN:
+        wait = int(OTP_RESEND_COOLDOWN - (now - last.created_at).total_seconds()) + 1
+        return jsonify({"error": f"Please wait {wait}s before requesting another code.",
+                        "retry_after": wait}), 429
+
+    code = f"{secrets.randbelow(10 ** OTP_LENGTH):0{OTP_LENGTH}d}"
+    db.session.add(OtpCode(
+        phone=phone, purpose=purpose,
+        code_hash=_gph(code),
+        expires_at=now + _timedelta(seconds=OTP_TTL_SECONDS),
+    ))
+    db.session.commit()
+
+    delivered, channel, detail = _deliver_otp(phone, code)
+    if not delivered:
+        return jsonify({"error": detail}), 503
+
+    resp = {"ok": True, "ttl_seconds": OTP_TTL_SECONDS,
+            "resend_after": OTP_RESEND_COOLDOWN, "channel": channel}
+    if channel == "demo":
+        resp["demo"] = True
+        resp["dev_otp"] = code  # demo-only affordance
+    return jsonify(resp)
+
+
+@app.route("/api/auth/otp/verify", methods=["POST"])
+@limiter.limit("20 per minute")
+def otp_verify():
+    data = request.get_json(force=True) or {}
+    purpose = (data.get("purpose") or "login").strip().lower()
+    phone = _norm_phone(data.get("phone"))
+    code = (data.get("code") or "").strip()
+    name = (data.get("name") or "").strip()[:120]
+
+    if purpose not in ("login", "signup"):
+        return jsonify({"error": "Invalid purpose."}), 400
+    if not PHONE_RE.match(phone):
+        return jsonify({"error": "Enter a valid mobile number."}), 400
+    if not re.fullmatch(r"\d{6}", code):
+        return jsonify({"error": "Enter the 6-digit code."}), 400
+
+    user = User.query.filter_by(phone=phone).first()
+    if purpose == "signup":
+        if user:
+            return jsonify({"error": "This number is already registered. Sign in instead."}), 409
+        if len(name) < 2:
+            return jsonify({"error": "Enter your name (at least 2 characters)."}), 400
+    else:
+        if not user:
+            return jsonify({"error": "No Kitty account for this number yet. Choose “New Account”."}), 404
+
+    now = datetime.utcnow()
+    otp = (OtpCode.query.filter_by(phone=phone, purpose=purpose, consumed_at=None)
+           .order_by(OtpCode.created_at.desc()).first())
+    if not otp:
+        return jsonify({"error": "No active code. Request a new one."}), 400
+    if otp.expires_at < now:
+        return jsonify({"error": "Code expired. Request a new one."}), 400
+    if otp.attempts >= OTP_MAX_ATTEMPTS:
+        return jsonify({"error": "Too many wrong attempts. Request a new code."}), 429
+
+    if not _cph(otp.code_hash, code):
+        otp.attempts += 1
+        db.session.commit()
+        left = OTP_MAX_ATTEMPTS - otp.attempts
+        return jsonify({"error": f"Incorrect code. {left} attempt{'s' if left != 1 else ''} left."}), 401
+
+    # Success — consume the challenge
+    otp.consumed_at = now
+
+    if purpose == "signup":
+        user = User(name=name, phone=phone)
+        # PIN is no longer part of the product surface; store an unguessable
+        # random PIN hash so the legacy check_pin path can never be brute-forced.
+        user.set_pin(secrets.token_hex(16))
+        db.session.add(user)
+        db.session.flush()  # get user.id before notifications
+        db.session.add(Notification(
+            user_id=user.id, kind="welcome",
+            title="Welcome to Kitty!",
+            body="Create a room, share the 6-character invite code with flatmates, "
+                 "and split expenses to the exact paisa.",
+            link="",
+        ))
+        db.session.commit()
+    else:
+        db.session.commit()
+
+    session.clear()  # avoid session fixation
+    session["user_id"] = user.id
+    return jsonify(user.to_dict()), (201 if purpose == "signup" else 200)
 
 
 @app.route("/api/health", methods=["GET"])

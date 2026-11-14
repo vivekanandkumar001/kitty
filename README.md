@@ -6,7 +6,7 @@ calculation engine (`engine.py`) — split calculators, balance calculator,
 and a deterministic debt-simplification algorithm.
 
 ## What's built and working (tested end-to-end)
-- **Auth:** signup/login with phone + 4-digit PIN, server-side session, PIN hashed (werkzeug)
+- **Auth:** passwordless phone-OTP sign-in and sign-up. 6-digit codes, hashed at rest (scrypt), 5-minute TTL, 5 attempts per code, 30-second resend cooldown, hourly request cap, per-IP rate limiting. Legacy PIN endpoints retained but no longer exposed in the UI. Delivery: MSG91 → Twilio → demo mode (gated by `OTP_DEMO_MODE`).
 - **Rooms:** create, join by invite code, member list, roles (owner/member)
 - **Expenses:** equal / custom / percentage / attendance-based splits, categories, soft delete, dispute/resolve status
 - **Balances:** live net balance per member, computed server-side only
@@ -21,7 +21,9 @@ and a deterministic debt-simplification algorithm.
 - **Public + SEO:** indexable landing page at `/`, per-page titles/descriptions/canonical, Open Graph + Twitter cards, `SoftwareApplication`/`FAQPage` JSON-LD, generated `robots.txt` and `sitemap.xml`. Private pages are `noindex`.
 
 ## Deliberately deferred (per spec's own "what not to build initially")
-- **Real OTP/SMS auth** — needs a paid SMS provider account (Twilio/MSG91). Current PIN-based auth is the same security shape (hashed, server-validated, rate-limitable) — swapping in real OTP later is a contained change to `/api/auth/*` in `app.py`, not a redesign.
+- **SMS delivery credentials** — the OTP flow is fully built; what's needed for real SMS to reach phones is provider credentials (MSG91 with DLT sender/template, or Twilio account/from number) set as environment variables. Until then, running with `OTP_DEMO_MODE=true` lets you exercise the entire flow (the 6-digit code is returned in the API response). Set:
+  - `MSG91_AUTH_KEY` + `MSG91_SENDER_ID` (+ optional `MSG91_ROUTE`), or
+  - `TWILIO_ACCOUNT_SID` + `TWILIO_AUTH_TOKEN` + `TWILIO_FROM`
 - **Receipt image upload** — needs object storage (S3-compatible). Add a `Receipt` model + upload endpoint when you're ready to wire storage.
 - **Push/WhatsApp/email notifications** — the in-app notification feed (events, unread badge, panel) is built and DB-backed. Delivering it *outside* the app needs a background worker plus SMS/email/push credentials, so that's a pluggable sender on top of the existing `Notification` rows, not new logic.
 - **Multiple rooms/account plans, PG/hostel B2B dashboard** — Phase 3 per the spec; build after the consumer loop is validated.
@@ -29,7 +31,7 @@ and a deterministic debt-simplification algorithm.
 ## Architecture & Run locally
 
 Kitty is cleanly separated into two distinct layers:
-1. **`backend/`**: Python Flask REST API server with PostgreSQL database, pure integer paise ledger, CORS support, and 107 automated pytest integration tests.
+1. **`backend/`**: Python Flask REST API server with PostgreSQL database, pure integer paise ledger, CORS support, and an automated OTP integration test suite.
 2. **`frontend/`**: Modern React + Vite Single Page Application (SPA) with a rich responsive design system, Lucide icons, and real-time debt calculation.
 
 ### Run Backend
@@ -48,10 +50,11 @@ npm run dev
 # App opens at http://localhost:5173 (auto-proxies /api to backend)
 ```
 
-To run all backend tests:
+To run the backend test suite (in-memory SQLite, demo-mode OTP, no SMS needed):
 ```bash
 cd backend
-python -m pytest tests/ -q
+pip install -r requirements-dev.txt
+TESTING=true python -m pytest tests/ -q
 ```
 
 ## CI/CD Pipeline & Branch Strategy
@@ -75,7 +78,7 @@ The repository includes GitHub Actions CI/CD workflows tailored for two primary 
             │                                 │
      • Node 20 setup                  • Python 3.11 setup
      • npm ci & test                  • PostgreSQL 16 Service Container
-     • npm run build                  • Pytest suite (107 tests)
+     • npm run build                  • Pytest suite (tests/)
      • Artifact upload                • Docker container build
      • Deploy to Vercel/Netlify       • Deploy to Render/Railway/DockerHub
 ```
@@ -97,7 +100,7 @@ The repository includes GitHub Actions CI/CD workflows tailored for two primary 
   - Spawns an isolated PostgreSQL 16 service container
   - Sets up Python 3.11 with pip cache
   - Installs requirements (`pip install -r backend/requirements.txt`)
-  - Runs full 107-test suite against PostgreSQL (`pytest tests/ -v`)
+  - Runs full test suite on SQLite (`pytest tests/ -q`)
   - Tests Docker container build (`docker build -t kitty-backend ./backend`)
 - **CD Steps (Optional Deploy):**
   - Triggers Render deploy webhook (`RENDER_DEPLOY_HOOK`)

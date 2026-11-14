@@ -20,6 +20,27 @@ def gen_code(length=6):
 
 
 # ---------------------------------------------------------------------------
+# OTP (one-time password for phone sign-in / sign-up)
+# ---------------------------------------------------------------------------
+class OtpCode(db.Model):
+    """A single 6-digit OTP challenge for a phone number + purpose.
+
+    - Codes are stored as werkzeug (scrypt) hashes — never plaintext.
+    - TTL is enforced by `expires_at`; attempts are capped per code.
+    - `consumed_at` marks single use; the latest row for (phone, purpose)
+      is the active challenge.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    phone = db.Column(db.String(20), nullable=False, index=True)
+    purpose = db.Column(db.String(10), nullable=False)  # 'login' | 'signup'
+    code_hash = db.Column(db.String(255), nullable=False)
+    attempts = db.Column(db.Integer, default=0)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    consumed_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# ---------------------------------------------------------------------------
 # User
 # ---------------------------------------------------------------------------
 class User(db.Model):

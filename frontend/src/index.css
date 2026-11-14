@@ -1430,6 +1430,117 @@ select.form-control {
 }
 
 /* ------------------------------------------------------------------
+   18b. OTP / auth extended primitives
+   ------------------------------------------------------------------ */
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--coral-ink);
+  margin-top: 5px;
+  animation: fadeIn 0.2s ease-out;
+}
+.form-control.invalid {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px var(--coral-subtle);
+}
+
+.phone-input-wrap { display: flex; align-items: stretch; }
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 13px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  user-select: none;
+}
+.phone-input-wrap .form-control { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+.otp-row {
+  display: flex;
+  gap: 9px;
+  margin: 20px 0 6px;
+}
+.otp-box {
+  width: 100%;
+  aspect-ratio: 0.82;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease, transform var(--t-fast) ease;
+  caret-color: var(--emerald);
+}
+.otp-box:hover { border-color: var(--border-hover); }
+.otp-box:focus { border-color: var(--border-focus); box-shadow: var(--ring); outline: none; background: var(--bg-surface); }
+.otp-box.filled { border-color: var(--emerald); background: var(--emerald-subtle); }
+.otp-box.invalid { border-color: var(--coral); animation: otpShake 0.4s ease-in-out; }
+
+@keyframes otpShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-5px); }
+  40%, 60% { transform: translateX(5px); }
+}
+
+.otp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.link-btn {
+  color: var(--emerald-ink);
+  font-weight: 600;
+  font-size: 0.84rem;
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+  transition: opacity var(--t-fast) ease;
+}
+.link-btn:hover:not(:disabled) { border-bottom-color: var(--emerald-ink); }
+.link-btn:disabled { color: var(--text-dim); cursor: default; }
+
+.demo-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--amber-subtle);
+  border: 1px dashed rgba(245, 158, 11, 0.45);
+  color: var(--amber-ink);
+  font-size: 0.8rem;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.demo-banner .mono { font-size: 1rem; font-weight: 700; letter-spacing: 0.18em; }
+
+.verify-head { text-align: center; margin-bottom: 18px; }
+.verify-dest {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.04em;
+}
+.step-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; }
+.step-dot { width: 22px; height: 4px; border-radius: 999px; background: var(--border-card); transition: background var(--t-base) ease; }
+.step-dot.active { background: var(--emerald); box-shadow: 0 0 8px var(--emerald-glow); }
+
+/* ------------------------------------------------------------------
    19. Responsive
    ------------------------------------------------------------------ */
 @media (max-width: 1024px) {
