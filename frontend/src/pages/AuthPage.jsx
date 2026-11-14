@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useTheme } from '../theme';
 import {
   Split,
   Phone,
@@ -15,11 +16,14 @@ import {
   Lock,
   BadgeCheck,
   Landmark,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 export default function AuthPage({ onOpenAdmin }) {
   const { login, signup } = useAuth();
   const { showToast } = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [name, setName] = useState('');
@@ -61,6 +65,19 @@ export default function AuthPage({ onOpenAdmin }) {
 
   return (
     <div className="auth-shell">
+      {/* Floating theme toggle (auth screens render without the navbar) */}
+      <button
+        type="button"
+        className="theme-toggle auth-theme-toggle"
+        onClick={toggleTheme}
+        aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+      >
+        <span className="toggle-icon"><Sun size={15} /></span>
+        <span className="toggle-icon"><Moon size={15} /></span>
+        <span className="toggle-thumb">{theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}</span>
+      </button>
+
       {/* ── Left: hero / value proposition ─────────────────────────── */}
       <aside className="auth-hero">
         <span className="auth-badge">

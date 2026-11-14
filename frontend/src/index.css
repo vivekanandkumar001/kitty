@@ -1263,7 +1263,11 @@ select.form-control {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   align-items: stretch;
+  position: relative;
 }
+.auth-theme-toggle { position: absolute; top: 18px; right: 18px; z-index: 5; }
+[data-theme="dark"] .auth-theme-toggle { background: rgba(13, 20, 36, 0.55); border-color: rgba(148,184,255,0.22); color: #A9B8D6; backdrop-filter: blur(8px); }
+[data-theme="dark"] .auth-theme-toggle:hover { border-color: rgba(148,184,255,0.4); }
 .auth-hero {
   position: relative;
   display: flex;

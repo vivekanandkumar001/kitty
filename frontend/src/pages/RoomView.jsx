@@ -21,14 +21,10 @@ import {
   ArrowRight,
   TrendingUp,
   ArrowDownRight,
-  ArrowUpRight,
   CreditCard,
   UserX,
   FileSpreadsheet,
   Search,
-  Filter,
-  DollarSign,
-  Tag,
 } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
