@@ -309,6 +309,43 @@ export default function AuthPage({ onOpenAdmin }) {
           <span aria-hidden="true">·</span>
           <span><span className="mono">OTP</span> over SMS</span>
         </div>
+
+        {/* Floating product shot — Wise-style device peeking from the hero edge */}
+        <div className="hero-phone" aria-hidden="true">
+          <div className="hero-phone-frame">
+            <div className="hero-phone-screen">
+              {/* status bar */}
+              <div className="hp-status">
+                <span className="mono">9:41</span>
+                <span className="hp-status-icons"><i /><i /><i /></span>
+              </div>
+              {/* app bar */}
+              <div className="hp-appbar">
+                <span className="hp-cat" />
+                <span className="hp-appbar-name">Flat 302</span>
+                <span className="hp-chip">SILQW9</span>
+              </div>
+              {/* balance card */}
+              <div className="hp-balance">
+                <span className="hp-balance-label">Your room balance</span>
+                <span className="hp-balance-value mono">+₹1,240</span>
+                <span className="hp-badge mono">You get back</span>
+              </div>
+              {/* split bars */}
+              <div className="hp-bars">
+                <div className="hp-bar"><span style={{ width: '78%' }} /></div>
+                <div className="hp-bar gold"><span style={{ width: '46%' }} /></div>
+                <div className="hp-bar dim"><span style={{ width: '24%' }} /></div>
+              </div>
+              {/* ledger rows */}
+              <div className="hp-row"><b>Groceries</b><span className="mono">₹1,840</span></div>
+              <div className="hp-row"><b>Wifi · Nov</b><span className="mono">₹1,199</span></div>
+              <div className="hp-row"><b>Maid</b><span className="mono">₹2,400</span></div>
+            </div>
+          </div>
+          {/* floating settlement chip */}
+          <div className="hp-float mono">Rahul → you · ₹450 <em>UPI ✓</em></div>
+        </div>
       </aside>
 
       {/* ── Right: auth card ─────────────────────────────────────── */}
