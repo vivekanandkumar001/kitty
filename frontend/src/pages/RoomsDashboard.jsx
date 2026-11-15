@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { apiRequest } from '../api';
+import React, { useState, useEffect, useMemo } from 'react';
+import { apiRequest, formatMoney } from '../api';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import {
   Plus,
@@ -14,12 +15,17 @@ import {
   ShieldCheck,
   DoorOpen,
   ChevronRight,
+  Wallet,
 } from 'lucide-react';
 
 export default function RoomsDashboard({ onSelectRoom }) {
   const { showToast } = useToast();
+  const { user } = useAuth();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Per-room net balance for me (paise). Best-effort: rooms that fail just
+  // don't contribute to the aggregate.
+  const [myBalances, setMyBalances] = useState({});
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -47,6 +53,28 @@ export default function RoomsDashboard({ onSelectRoom }) {
     fetchRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Aggregate my balance across rooms (Revolut/CRED-style "money position")
+  useEffect(() => {
+    if (!user || rooms.length === 0) return undefined;
+    let cancelled = false;
+    Promise.allSettled(
+      rooms.map((room) => apiRequest(`/api/rooms/${room.code}/balances`))
+    ).then((results) => {
+      if (cancelled) return;
+      const map = {};
+      results.forEach((res, i) => {
+        if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+          const me = res.value.find((b) => b.user_id === user.id);
+          if (me) map[rooms[i].code] = me.balance_minor || 0;
+        }
+      });
+      setMyBalances(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [rooms, user]);
 
   // Native bottom-bar FAB → open the create-room composer
   useEffect(() => {
@@ -115,6 +143,24 @@ export default function RoomsDashboard({ onSelectRoom }) {
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
   }).length;
 
+  // Aggregate "money position" across rooms — the fintech home pattern
+  const position = useMemo(() => {
+    const values = Object.values(myBalances);
+    const net = values.reduce((sum, v) => sum + v, 0);
+    const owedRooms = values.filter((v) => v > 0).length;
+    const oweRooms = values.filter((v) => v < 0).length;
+    const loaded = values.length > 0;
+    return { net, owedRooms, oweRooms, loaded };
+  }, [myBalances]);
+
+  const positionSub = !position.loaded
+    ? 'Ledger syncing…'
+    : position.net > 0
+      ? `${position.owedRooms} room${position.owedRooms === 1 ? '' : 's'} owe you · tap a room to review & settle`
+      : position.net < 0
+        ? `You owe in ${position.oweRooms} room${position.oweRooms === 1 ? '' : 's'} · settle from inside the room`
+        : 'Everything is settled up across your rooms';
+
   return (
     <div className="animate-in">
       {/* ── Page header ─────────────────────────────────────────── */}
@@ -136,6 +182,22 @@ export default function RoomsDashboard({ onSelectRoom }) {
           </button>
         </div>
       </div>
+
+      {/* ── Money position hero (fintech home pattern) ──────────── */}
+      {rooms.length > 0 && (
+        <div className={`money-hero ${position.net > 0 ? 'pos' : position.net < 0 ? 'neg' : 'zero'}`} role="status" aria-label="Your net balance across rooms">
+        <div className="money-hero-text">
+          <span className="money-hero-label"><span className="dot" /> Your money position</span>
+          <span className="money-hero-value mono">
+            {position.loaded ? `${position.net >= 0 ? '+' : '−'}${formatMoney(Math.abs(position.net))}` : '— —'}
+          </span>
+          <span className="money-hero-sub">{positionSub}</span>
+        </div>
+        {position.net !== 0 && (
+          <div className="money-hero-icon"><Wallet size={24} strokeWidth={1.8} /></div>
+        )}
+        </div>
+      )}
 
       {/* ── KPI strip ───────────────────────────────────────────── */}
       <div className="stats-grid" style={{ marginBottom: '26px' }}>
@@ -235,6 +297,15 @@ export default function RoomsDashboard({ onSelectRoom }) {
                     })()}
                   </span>
                 </div>
+                {myBalances[room.code] !== undefined && (
+                  <span className={`room-card-balance mono ${myBalances[room.code] > 0 ? 'pos' : myBalances[room.code] < 0 ? 'neg' : 'zero'}`}>
+                    {myBalances[room.code] > 0
+                      ? `+${formatMoney(myBalances[room.code])}`
+                      : myBalances[room.code] < 0
+                        ? `−${formatMoney(Math.abs(myBalances[room.code]))}`
+                        : '₹0'}
+                  </span>
+                )}
                 <ChevronRight size={18} className="room-card-chevron" aria-hidden="true" />
               </div>
 
