@@ -13,6 +13,7 @@ import {
   CalendarClock,
   ShieldCheck,
   DoorOpen,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function RoomsDashboard({ onSelectRoom }) {
@@ -202,6 +203,7 @@ export default function RoomsDashboard({ onSelectRoom }) {
         </div>
       ) : (
         <div
+          className="room-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))',
@@ -211,61 +213,33 @@ export default function RoomsDashboard({ onSelectRoom }) {
           {rooms.map((room) => (
             <div
               key={room.code}
-              className="card card-clickable"
+              className="card card-clickable room-card"
               onClick={() => onSelectRoom(room.code)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && onSelectRoom(room.code)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                padding: '20px',
-                gap: '18px',
-              }}
             >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                    <div
-                      style={{
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '12px',
-                        flexShrink: 0,
-                        background: 'linear-gradient(135deg, rgba(16,185,129,0.22) 0%, rgba(99,102,241,0.22) 100%)',
-                        border: '1px solid var(--border-card)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'var(--emerald-ink)',
-                      }}
-                    >
-                      <Building size={21} strokeWidth={1.9} />
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <h3 style={{ margin: 0, fontSize: '1.04rem', fontWeight: 700, letterSpacing: '-0.015em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {room.name}
-                      </h3>
-                      <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-                        opened {new Date(room.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </span>
-                    </div>
-                  </div>
+              <div className="room-card-top">
+                <div
+                  className="room-card-icon"
+                >
+                  <Building size={21} strokeWidth={1.9} />
                 </div>
+                <div className="room-card-text">
+                  <h3 className="room-card-name">{room.name}</h3>
+                  <span className="room-card-meta">
+                    {room.member_count ?? '—'} member{room.member_count === 1 ? '' : 's'}{' · '}
+                    {(() => {
+                      const d = room.created_at ? new Date(room.created_at) : null;
+                      return d && !isNaN(d) ? `opened ${d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}` : 'recently opened';
+                    })()}
+                  </span>
+                </div>
+                <ChevronRight size={18} className="room-card-chevron" aria-hidden="true" />
               </div>
 
               {/* Footer row: invite code + open */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '10px',
-                  paddingTop: '14px',
-                  borderTop: '1px solid var(--border-subtle)',
-                }}
-              >
+              <div className="room-card-foot">
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm mono"
@@ -280,7 +254,7 @@ export default function RoomsDashboard({ onSelectRoom }) {
                   )}
                 </button>
 
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', fontWeight: 600, color: 'var(--emerald-ink)' }}>
+                <span className="room-card-open">
                   Open dashboard <ArrowRight size={14} />
                 </span>
               </div>

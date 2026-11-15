@@ -1706,6 +1706,39 @@ select.form-control {
   .auth-theme-toggle { display: inline-flex; }
 }
 
+/* Room cards — desktop: rich grid card; mobile: native list row */
+.room-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  text-align: left;
+}
+.room-card-top { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.room-card-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(99, 102, 241, 0.22) 100%);
+  border: 1px solid var(--border-card);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--emerald-ink);
+}
+.room-card-text { min-width: 0; flex: 1; }
+.room-card-name {
+  margin: 0; font-size: 1.02rem; font-weight: 700;
+  letter-spacing: -0.015em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.room-card-meta { font-size: 0.74rem; color: var(--text-dim); }
+.room-card-chevron { color: var(--text-dim); flex-shrink: 0; display: none; }
+.room-card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding-top: 13px;
+  border-top: 1px solid var(--border-subtle);
+}
+.room-card-open { display: flex; align-items: center; gap: 6px; font-size: 0.84rem; font-weight: 600; color: var(--emerald-ink); }
+
 /* ------------------------------------------------------------------
    21. Mobile polish — compact landing hero + denser grids
    ------------------------------------------------------------------ */
@@ -1714,6 +1747,7 @@ select.form-control {
   .auth-hero { display: none; }
   .auth-mobile-brand { display: flex; }
   .auth-form-pane {
+    flex-direction: column;
     justify-content: flex-start;
     padding: calc(34px + env(safe-area-inset-top)) 12px 28px;
   }
@@ -1730,6 +1764,15 @@ select.form-control {
   .stat-value { font-size: 1.1rem; }
   .stat-sub { font-size: 0.66rem; line-height: 1.35; }
   .stat-label { font-size: 0.6rem; }
+
+  .room-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .room-card { flex-direction: column; padding: 13px 14px !important; gap: 10px; }
+  .room-card-chevron { display: block; }
+  .room-card-open { display: none; }
+  .room-card-icon { width: 40px; height: 40px; border-radius: 10px; }
+  .room-card-name { font-size: 0.95rem; }
+  .room-card-meta { font-size: 0.7rem; }
+  .room-card-foot { padding-top: 9px; }
 
   /* Tabs — soft edge fades to signal horizontal scroll */
   .tabs-nav {

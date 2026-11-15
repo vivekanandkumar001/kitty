@@ -84,6 +84,7 @@ class Room(db.Model):
         return {
             "id": self.id, "code": self.code, "name": self.name, "currency": self.currency,
             "member_count": len(self.active_members()),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
 
