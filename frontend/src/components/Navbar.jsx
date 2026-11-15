@@ -256,6 +256,19 @@ export default function Navbar({ onSelectRoom, onNavigateRooms, onOpenProfile, o
                     </button>
                   )}
 
+                  {/* Theme toggle lives here on mobile (it's hidden from the top bar) */}
+                  <button
+                    type="button"
+                    className="menu-item"
+                    onClick={() => {
+                      toggleTheme();
+                      setShowUserMenu(false);
+                    }}
+                  >
+                    {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+                    {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                  </button>
+
                   <button type="button" className="menu-item danger" onClick={handleLogout}>
                     <LogOut size={15} /> Log out
                   </button>

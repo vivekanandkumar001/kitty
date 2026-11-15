@@ -1602,8 +1602,61 @@ select.form-control {
   .app-main { padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important; }
 
   /* Slim native top bar */
-  .navbar { height: 56px; }
+  .navbar { height: calc(56px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+  .navbar .theme-toggle { display: none; }
+  .nav-divider { display: none; }
   .brand-badge, .user-menu-name, .nav-crumb { display: none; }
+  .auth-theme-toggle { display: inline-flex; }
+}
+
+/* ------------------------------------------------------------------
+   21. Mobile polish — compact landing hero + denser grids
+   ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+  /* Landing hero — compact so headline + form both fit without a scroll safari */
+  .auth-hero {
+    padding: 30px 20px 22px;
+    gap: 12px;
+    min-height: auto;
+  }
+  .auth-badge {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    padding: 5px 10px;
+    max-width: calc(100% - 76px);
+    line-height: 1.45;
+  }
+  .auth-headline { font-size: clamp(1.55rem, 8.2vw, 2.05rem); line-height: 1.1; }
+  .auth-sub { font-size: 0.85rem; line-height: 1.5; }
+  .auth-checklist { gap: 9px; }
+  .auth-check { font-size: 0.8rem; gap: 10px; }
+  .auth-check:nth-child(2), .auth-check:nth-child(3) { display: none; }   /* keep debt-simplification + OTP proof points */
+  .auth-check .check-dot { width: 19px; height: 19px; }
+  .auth-foot { display: none; }
+
+  .auth-theme-toggle { top: calc(12px + env(safe-area-inset-top)); }
+
+  /* Sign-in card — tighter */
+  .auth-form-pane { padding: 14px 12px 30px; }
+  .auth-card { padding: 20px 16px; border-radius: var(--radius-lg); }
+  .step-dots { margin-bottom: 12px; }
+
+  /* Rooms dashboard — denser KPI grid, less dead space */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stats-grid .stat-card:last-child { grid-column: 1 / -1; }
+  .stat-card { padding: 12px 13px; }
+  .stat-value { font-size: 1.1rem; }
+  .stat-sub { font-size: 0.66rem; line-height: 1.35; }
+  .stat-label { font-size: 0.6rem; }
+
+  /* Tabs — soft edge fades to signal horizontal scroll */
+  .tabs-nav {
+    -webkit-mask-image: linear-gradient(90deg, black 0 86%, transparent 100%);
+            mask-image: linear-gradient(90deg, black 0 86%, transparent 100%);
+  }
+  .hero-banner { padding: 16px; }
+  .page-title { font-size: 1.4rem !important; }
+  .hero-banner .page-actions .btn { flex: 1; }
 }
 
 /* ------------------------------------------------------------------
