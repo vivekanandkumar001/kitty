@@ -47,6 +47,13 @@ export default function RoomsDashboard({ onSelectRoom }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Native bottom-bar FAB → open the create-room composer
+  useEffect(() => {
+    const handler = () => setShowCreateModal(true);
+    window.addEventListener('kitty:quick-add', handler);
+    return () => window.removeEventListener('kitty:quick-add', handler);
+  }, []);
+
   const handleCreateRoom = async (e) => {
     e.preventDefault();
     if (!newRoomName.trim()) {

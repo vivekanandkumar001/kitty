@@ -161,6 +161,13 @@ export default function RoomView({ roomCode, onBack }) {
     loadRoomData();
   }, [loadRoomData]);
 
+  // Native bottom-bar FAB → open the add-expense composer
+  useEffect(() => {
+    const handler = () => setShowAddExpense(true);
+    window.addEventListener('kitty:quick-add', handler);
+    return () => window.removeEventListener('kitty:quick-add', handler);
+  }, []);
+
   // Fetch dynamic categories and split types
   useEffect(() => {
     apiRequest('/api/categories')

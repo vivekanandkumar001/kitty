@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/Navbar';
+import BottomNav from './components/BottomNav';
 import ProfileModal from './components/ProfileModal';
 import AuthPage from './pages/AuthPage';
 import RoomsDashboard from './pages/RoomsDashboard';
@@ -76,6 +77,17 @@ function MainApp() {
           />
         )}
       </main>
+
+      {user && (
+        <BottomNav
+          view={showAdmin ? 'admin' : selectedRoomCode ? 'room' : 'rooms'}
+          onNavigateRooms={() => {
+            setShowAdmin(false);
+            setSelectedRoomCode(null);
+          }}
+          onOpenProfile={() => setShowProfileModal(true)}
+        />
+      )}
 
       <footer className="app-footer">
         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
