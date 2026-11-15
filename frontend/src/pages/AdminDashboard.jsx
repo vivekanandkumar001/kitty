@@ -8,19 +8,15 @@ import {
   Users,
   Building,
   TrendingUp,
-  CreditCard,
   Search,
   Trash2,
   RefreshCw,
   ArrowLeft,
   LogOut,
   KeyRound,
-  Calendar,
-  Phone,
-  Tag,
   CheckCircle,
   AlertTriangle,
-  Receipt,
+  Tag,
   Layers,
   ArrowRight,
 } from 'lucide-react';
@@ -187,7 +183,7 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
   if (checkingAuth) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-        <Shield size={36} style={{ animation: 'pulse 1.5s infinite', color: 'var(--indigo-ink)' }} />
+        <Shield size={36} className="animate-pulse-soft" style={{ color: 'var(--indigo-ink)' }} />
         <p style={{ marginTop: '14px', fontWeight: 600 }}>Verifying admin credentials...</p>
       </div>
     );
@@ -413,103 +409,43 @@ export default function AdminDashboard({ onBack, onSelectRoom }) {
             }}
           >
             {/* Metric 1: Users */}
-            <div className="card" style={{ padding: '20px 22px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Registered Users
-                </span>
-                <div
-                  style={{
-                    padding: '8px',
-                    borderRadius: '10px',
-                    background: 'var(--indigo-subtle)',
-                    color: 'var(--indigo-ink)',
-                  }}
-                >
-                  <Users size={20} />
-                </div>
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-label">Registered Users</span>
+                <span className="icon-chip indigo"><Users size={16} /></span>
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '10px' }} className="mono">
-                {stats?.total_users ?? usersList.length}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                Unique phone accounts on platform
-              </div>
+              <div className="stat-value">{stats?.total_users ?? usersList.length}</div>
+              <div className="stat-sub">Unique phone accounts on platform</div>
             </div>
 
             {/* Metric 2: Rooms */}
-            <div className="card" style={{ padding: '20px 22px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Active Rooms
-                </span>
-                <div
-                  style={{
-                    padding: '8px',
-                    borderRadius: '10px',
-                    background: 'var(--emerald-subtle)',
-                    color: 'var(--emerald-ink)',
-                  }}
-                >
-                  <Building size={20} />
-                </div>
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-label">Active Rooms</span>
+                <span className="icon-chip emerald"><Building size={16} /></span>
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '10px' }} className="mono">
-                {stats?.total_rooms ?? roomsList.length}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                Flats, hostels & shared spaces
-              </div>
+              <div className="stat-value">{stats?.total_rooms ?? roomsList.length}</div>
+              <div className="stat-sub">Flats, hostels &amp; shared spaces</div>
             </div>
 
             {/* Metric 3: Total Expenses Volume */}
-            <div className="card" style={{ padding: '20px 22px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Total Expense Volume
-                </span>
-                <div
-                  style={{
-                    padding: '8px',
-                    borderRadius: '10px',
-                    background: 'rgba(234, 179, 8, 0.15)',
-                    color: '#eab308',
-                  }}
-                >
-                  <TrendingUp size={20} />
-                </div>
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-label">Total Expense Volume</span>
+                <span className="icon-chip amber"><TrendingUp size={16} /></span>
               </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '10px' }} className="mono">
-                {formatMoney(stats?.total_volume_minor || 0)}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                Across {stats?.total_expenses || 0} logged transactions
-              </div>
+              <div className="stat-value">{formatMoney(stats?.total_volume_minor || 0)}</div>
+              <div className="stat-sub">Across {stats?.total_expenses || 0} logged transactions</div>
             </div>
 
             {/* Metric 4: Total Settled Payments */}
-            <div className="card" style={{ padding: '20px 22px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Total Settled Debts
-                </span>
-                <div
-                  style={{
-                    padding: '8px',
-                    borderRadius: '10px',
-                    background: 'var(--emerald-subtle)',
-                    color: 'var(--emerald-ink)',
-                  }}
-                >
-                  <CheckCircle size={20} />
-                </div>
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-label">Total Settled Debts</span>
+                <span className="icon-chip emerald"><CheckCircle size={16} /></span>
               </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '10px', color: 'var(--emerald-ink)' }} className="mono">
-                {formatMoney(stats?.total_settled_minor || 0)}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                {stats?.total_settlements || 0} UPI & direct settlements
-              </div>
+              <div className="stat-value text-emerald">{formatMoney(stats?.total_settled_minor || 0)}</div>
+              <div className="stat-sub">{stats?.total_settlements || 0} UPI &amp; direct settlements</div>
             </div>
           </div>
 

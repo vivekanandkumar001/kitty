@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Modal from '../components/Modal';
 import {
-  Building,
   Users,
   Copy,
   Check,
@@ -12,6 +11,7 @@ import {
   Receipt,
   Scale,
   Calendar,
+  Tag,
   Download,
   AlertTriangle,
   Trash2,
@@ -720,10 +720,14 @@ export default function RoomView({ roomCode, onBack }) {
             }}
           >
             {/* Top Categories Card */}
-            <div className="card">
-              <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700 }}>
-                Category Breakdown (This Month)
-              </h4>
+            <div className="section-card">
+              <div className="section-card-header">
+                <h4 className="section-card-title">
+                  <span className="icon-chip indigo"><Tag size={15} /></span>
+                  Category Breakdown
+                </h4>
+              </div>
+              <div className="section-card-body">
               {dashboard?.top_categories && dashboard.top_categories.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {dashboard.top_categories.map((cat) => {
@@ -754,12 +758,14 @@ export default function RoomView({ roomCode, onBack }) {
                   No expenses recorded this month yet.
                 </div>
               )}
+              </div>
             </div>
 
             {/* Quick Settle / Debt Summary Card */}
-            <div className="card">
-              <div className="card-header-flex">
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>
+            <div className="section-card">
+              <div className="section-card-header">
+                <h4 className="section-card-title">
+                  <span className="icon-chip emerald"><Scale size={15} /></span>
                   Simplified Debts
                 </h4>
                 <button
@@ -770,6 +776,7 @@ export default function RoomView({ roomCode, onBack }) {
                   View All ({simplifiedDebts.length})
                 </button>
               </div>
+              <div className="section-card-body">
 
               {simplifiedDebts.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-dim)', fontSize: '0.88rem' }}>
@@ -804,13 +811,15 @@ export default function RoomView({ roomCode, onBack }) {
                   ))}
                 </div>
               )}
+              </div>
             </div>
           </div>
 
           {/* Recent Expenses Preview */}
-          <div className="card">
-            <div className="card-header-flex">
-              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>
+          <div className="section-card">
+            <div className="section-card-header">
+              <h4 className="section-card-title">
+                <span className="icon-chip sky"><Receipt size={15} /></span>
                 Recent Expenses
               </h4>
               <button
@@ -821,6 +830,7 @@ export default function RoomView({ roomCode, onBack }) {
                 View all ({expenses.length})
               </button>
             </div>
+            <div className="section-card-body">
 
             {expenses.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-dim)', fontSize: '0.88rem' }}>
@@ -829,18 +839,7 @@ export default function RoomView({ roomCode, onBack }) {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {expenses.slice(0, 5).map((e) => (
-                  <div
-                    key={e.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '12px 14px',
-                      background: 'var(--bg-surface)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-subtle)',
-                    }}
-                  >
+                  <div key={e.id} className="ledger-row">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span className={`badge ${getCategoryBadgeClass(e.category)}`}>
                         {e.category}
@@ -861,6 +860,7 @@ export default function RoomView({ roomCode, onBack }) {
                 ))}
               </div>
             )}
+            </div>
           </div>
         </div>
       )}
@@ -929,8 +929,12 @@ export default function RoomView({ roomCode, onBack }) {
 
           {/* Expense Cards */}
           {filteredExpenses.length === 0 ? (
-            <div className="card" style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-dim)' }}>
-              No expenses matching your criteria.
+            <div className="section-card">
+              <div className="empty-state" style={{ padding: '48px 24px' }}>
+                <div className="empty-icon"><Receipt size={24} strokeWidth={1.7} /></div>
+                <h4>No matching expenses</h4>
+                <p>Try a different search term or category filter.</p>
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1031,10 +1035,14 @@ export default function RoomView({ roomCode, onBack }) {
       {activeTab === 'balances' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Member Net Balances */}
-          <div className="card">
-            <h4 style={{ margin: '0 0 16px', fontSize: '1.1rem', fontWeight: 700 }}>
-              Member Net Ledger
-            </h4>
+          <div className="section-card">
+            <div className="section-card-header">
+              <h4 className="section-card-title">
+                <span className="icon-chip emerald"><Users size={15} /></span>
+                Member Net Ledger
+              </h4>
+            </div>
+            <div className="section-card-body">
             <div
               style={{
                 display: 'grid',
@@ -1083,16 +1091,18 @@ export default function RoomView({ roomCode, onBack }) {
                 </div>
               ))}
             </div>
+            </div>
           </div>
 
           {/* Simplified Debt Transactions */}
-          <div className="card">
-            <div className="card-header-flex">
+          <div className="section-card">
+            <div className="section-card-header">
               <div>
-                <h4 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700 }}>
+                <h4 className="section-card-title">
+                  <span className="icon-chip emerald"><Scale size={15} /></span>
                   Simplified Settlement Plan
                 </h4>
-                <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Mathematically calculated minimum payment routes to settle all room debts.
                 </div>
               </div>
@@ -1104,6 +1114,7 @@ export default function RoomView({ roomCode, onBack }) {
                 <Plus size={14} /> Record Payment
               </button>
             </div>
+            <div className="section-card-body">
 
             {simplifiedDebts.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-dim)' }}>
@@ -1178,13 +1189,18 @@ export default function RoomView({ roomCode, onBack }) {
                 ))}
               </div>
             )}
+            </div>
           </div>
 
           {/* Settlement History */}
-          <div className="card">
-            <h4 style={{ margin: '0 0 16px', fontSize: '1.1rem', fontWeight: 700 }}>
-              Settlement History
-            </h4>
+          <div className="section-card">
+            <div className="section-card-header">
+              <h4 className="section-card-title">
+                <span className="icon-chip sky"><Receipt size={15} /></span>
+                Settlement History
+              </h4>
+            </div>
+            <div className="section-card-body">
             {settlements.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-dim)', fontSize: '0.88rem' }}>
                 No recorded settlements yet.
@@ -1223,6 +1239,7 @@ export default function RoomView({ roomCode, onBack }) {
                 ))}
               </div>
             )}
+            </div>
           </div>
         </div>
       )}
@@ -1232,13 +1249,14 @@ export default function RoomView({ roomCode, onBack }) {
          ========================================================================= */}
       {activeTab === 'members' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="card">
-            <div className="card-header-flex">
+          <div className="section-card">
+            <div className="section-card-header">
               <div>
-                <h4 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700 }}>
+                <h4 className="section-card-title">
+                  <span className="icon-chip emerald"><Users size={15} /></span>
                   Room Members
                 </h4>
-                <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Active flatmates, roles, UPI handles, and security deposits.
                 </div>
               </div>
@@ -1261,7 +1279,7 @@ export default function RoomView({ roomCode, onBack }) {
                 </button>
               </div>
             </div>
-
+            <div className="section-card-body">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {members.map((m) => {
                 const isCaller = user && m.user_id === user.id;
@@ -1359,6 +1377,7 @@ export default function RoomView({ roomCode, onBack }) {
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
       )}
@@ -1368,13 +1387,14 @@ export default function RoomView({ roomCode, onBack }) {
          ========================================================================= */}
       {activeTab === 'recurring' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="card">
-            <div className="card-header-flex">
+          <div className="section-card">
+            <div className="section-card-header">
               <div>
-                <h4 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700 }}>
+                <h4 className="section-card-title">
+                  <span className="icon-chip amber"><Repeat size={15} /></span>
                   Recurring Bills
                 </h4>
-                <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Templates for fixed monthly expenses like Rent, Wifi, Maid, and Maintenance.
                 </div>
               </div>
@@ -1386,6 +1406,7 @@ export default function RoomView({ roomCode, onBack }) {
                 <Plus size={14} /> Add Recurring Bill
               </button>
             </div>
+            <div className="section-card-body">
 
             {recurringList.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-dim)', fontSize: '0.88rem' }}>
@@ -1447,6 +1468,7 @@ export default function RoomView({ roomCode, onBack }) {
                 ))}
               </div>
             )}
+            </div>
           </div>
         </div>
       )}
