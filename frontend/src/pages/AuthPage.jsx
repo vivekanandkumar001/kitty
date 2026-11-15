@@ -313,6 +313,15 @@ export default function AuthPage({ onOpenAdmin }) {
 
       {/* ── Right: auth card ─────────────────────────────────────── */}
       <div className="auth-form-pane">
+        {/* Mobile-only compact brand strip (hero is hidden on phones) */}
+        <div className="auth-mobile-brand">
+          <Logo size={44} className="logo-mark" />
+          <div>
+            <div className="auth-mobile-name">Kitty</div>
+            <div className="auth-mobile-tag">Shared living, settled to the paisa</div>
+          </div>
+        </div>
+
         <div className="auth-card">
           <div className="step-dots" aria-hidden="true">
             <span className={`step-dot ${step === 'identify' ? 'active' : ''}`} />

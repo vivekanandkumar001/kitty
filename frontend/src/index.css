@@ -1255,6 +1255,18 @@ select.form-control {
   position: relative;
 }
 .auth-theme-toggle { position: absolute; top: 18px; right: 18px; z-index: 5; }
+
+/* Compact brand strip — phones only; the marketing hero is hidden there */
+.auth-mobile-brand {
+  display: none;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  max-width: 440px;
+  margin-bottom: 18px;
+}
+.auth-mobile-name { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.02em; }
+.auth-mobile-tag { font-size: 0.76rem; color: var(--text-muted); margin-top: 1px; }
 [data-theme="dark"] .auth-theme-toggle { background: rgba(13, 20, 36, 0.55); border-color: rgba(148,184,255,0.22); color: #A9B8D6; backdrop-filter: blur(8px); }
 [data-theme="dark"] .auth-theme-toggle:hover { border-color: rgba(148,184,255,0.4); }
 .auth-hero {
@@ -1613,31 +1625,16 @@ select.form-control {
    21. Mobile polish — compact landing hero + denser grids
    ------------------------------------------------------------------ */
 @media (max-width: 768px) {
-  /* Landing hero — compact so headline + form both fit without a scroll safari */
-  .auth-hero {
-    padding: 30px 20px 22px;
-    gap: 12px;
-    min-height: auto;
+  /* Enterprise pattern: task first, marketing never — hero hidden on phones */
+  .auth-hero { display: none; }
+  .auth-mobile-brand { display: flex; }
+  .auth-form-pane {
+    justify-content: flex-start;
+    padding: calc(34px + env(safe-area-inset-top)) 12px 28px;
   }
-  .auth-badge {
-    font-size: 0.58rem;
-    letter-spacing: 0.1em;
-    padding: 5px 10px;
-    max-width: calc(100% - 76px);
-    line-height: 1.45;
-  }
-  .auth-headline { font-size: clamp(1.55rem, 8.2vw, 2.05rem); line-height: 1.1; }
-  .auth-sub { font-size: 0.85rem; line-height: 1.5; }
-  .auth-checklist { gap: 9px; }
-  .auth-check { font-size: 0.8rem; gap: 10px; }
-  .auth-check:nth-child(2), .auth-check:nth-child(3) { display: none; }   /* keep debt-simplification + OTP proof points */
-  .auth-check .check-dot { width: 19px; height: 19px; }
-  .auth-foot { display: none; }
-
-  .auth-theme-toggle { top: calc(12px + env(safe-area-inset-top)); }
+  .auth-shell { display: block; }
 
   /* Sign-in card — tighter */
-  .auth-form-pane { padding: 14px 12px 30px; }
   .auth-card { padding: 20px 16px; border-radius: var(--radius-lg); }
   .step-dots { margin-bottom: 12px; }
 
